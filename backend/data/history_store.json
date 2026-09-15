@@ -1,0 +1,57 @@
+[
+  {
+    "id": "pred_5d8a0bfabc",
+    "timestamp": "2026-09-13T06:16:44.950511+00:00",
+    "filename": "test_leaf.jpg",
+    "crop": "unknown",
+    "disease": "unknown",
+    "status": "unknown",
+    "confidence": 0.0,
+    "is_confident": true,
+    "heatmap_path": null,
+    "explanation": "No disease has been detected on this leaf. The tree appears healthy. Maintaining tree health through good agricultural practices is the most effective way to prevent diseases from taking hold.",
+    "immediate_actions_count": 4,
+    "disclaimer": "This is general guidance only and is not a substitute for advice from a qualified agricultural extension officer. Conditions and best practices may vary by region and citrus variety.",
+    "full_advisory": {
+      "crop": "citrus",
+      "disease": "Healthy",
+      "status": "healthy",
+      "confidence": 0.6705,
+      "is_confident": false,
+      "heatmap_path": "/static/heatmaps/gradcam_1dc2f5bea6294714a400f4408d8ef769.jpg",
+      "explanation": "No disease has been detected on this leaf. The tree appears healthy. Maintaining tree health through good agricultural practices is the most effective way to prevent diseases from taking hold.",
+      "immediate_actions": [
+        "Note: Because confidence is low, treat the following as general precautionary guidance only. Confirm the diagnosis with an expert before acting. Avoid irreversible actions (such as removing trees) until the identification is confirmed.",
+        "No treatment is needed.",
+        "Continue routine care — watering, feeding, and canopy management.",
+        "Take this opportunity to inspect nearby trees as a precaution."
+      ],
+      "spread_prevention": [
+        "Maintain good orchard hygiene — remove fallen fruit, leaves, and dead wood regularly.",
+        "Avoid introducing untested plant material from outside the grove.",
+        "Disinfect pruning tools between trees as a routine habit, even when no disease is visible.",
+        "Ensure adequate spacing and pruning to maintain good airflow through the canopy."
+      ],
+      "long_term_prevention": {
+        "inspection_frequency": "monthly",
+        "inspection_guidance": "Inspect all trees once a month, and after any significant weather event (heavy rain, strong wind, extreme heat). Focus on new leaf growth, fruit surfaces, and the trunk base.",
+        "universal_hygiene_practices": [
+          "Disinfect all pruning and harvesting tools between every tree, every time — this single habit prevents the majority of mechanical disease spread.",
+          "Remove and destroy fallen fruit, leaves, and cut branches promptly — do not leave organic debris on the orchard floor.",
+          "Wash hands and disinfect footwear when moving between different areas of the grove, particularly if one area has a confirmed or suspected infection.",
+          "Keep a simple orchard diary: record dates of inspections, symptoms observed, and actions taken — patterns become visible over time.",
+          "Do not introduce planting material (seedlings, cuttings, budwood) from outside the grove without confirmation that it is certified disease-free.",
+          "Review irrigation method periodically — overhead irrigation that wets foliage creates conditions favourable to many fungal and bacterial diseases."
+        ],
+        "long_term_monitoring": [
+          "Inspect leaves, fruit, and stems regularly — at least once a month and after any period of heavy rain or extreme weather.",
+          "Keep an eye on early warning signs such as unusual spots, yellowing, or leaf distortion.",
+          "Consult a local agricultural extension officer periodically for seasonal guidance and to stay informed about disease outbreaks in the region.",
+          "Keep records of the tree's condition over time — changes are easier to spot when you have a baseline."
+        ]
+      },
+      "confidence_warning": "⚠️ Low confidence: The system is not certain about this identification. The advice below is based on the most likely match but may not be accurate. Please retake the photo in clear daylight with the full leaf visible and try again. If the problem persists or worsens, consult a local agricultural extension officer or plant pathologist before taking any action.",
+      "disclaimer": "This is general guidance only and is not a substitute for advice from a qualified agricultural extension officer. Conditions and best practices may vary by region and citrus variety."
+    }
+  }
+]

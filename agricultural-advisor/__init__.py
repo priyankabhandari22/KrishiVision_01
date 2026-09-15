@@ -1,0 +1,3 @@
+"""
+agricultural-advisor package init.
+"""

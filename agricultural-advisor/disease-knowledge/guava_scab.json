@@ -1,0 +1,31 @@
+{
+  "crop": "guava",
+  "disease": "Scab",
+  "status": "diseased",
+  "disclaimer": "This is general guidance only and is not a substitute for advice from a qualified agricultural extension officer or plant pathologist. Local regulations and approved practices may vary.",
+
+  "description": "Guava Scab is a fungal disease that causes raised, rough, corky, or warty lesions on the surface of fruit, and sometimes on young leaves and shoots. The affected areas look cracked or crusty and may turn brown or grey. While scab rarely affects the internal flesh of the fruit, it makes fruit unmarketable and can cause young fruit to drop prematurely. The disease is most active during warm, humid, and rainy periods, and spreads through fungal spores carried by wind and water splash.",
+
+  "immediate_actions": [
+    "Remove and destroy visibly infected fruit — both on the tree and fallen on the ground.",
+    "Remove infected young shoots and leaves and dispose of them away from the grove.",
+    "Avoid overhead irrigation or any practices that keep the fruit and foliage wet.",
+    "Do not move infected plant material to other parts of the grove.",
+    "Consult a local agricultural extension officer for guidance on approved treatment options, especially if young fruit is dropping."
+  ],
+
+  "spread_prevention": [
+    "Prune trees to improve airflow and reduce the humidity inside the canopy where spores thrive.",
+    "Remove and destroy fallen fruit and leaf debris regularly — these are a source of fungal spores.",
+    "Avoid wetting the canopy during irrigation.",
+    "Disinfect pruning tools between trees.",
+    "Use certified, disease-free planting material when establishing new trees."
+  ],
+
+  "long_term_monitoring": [
+    "Inspect young fruit and new flushes of growth regularly during and after rainy periods.",
+    "Monitor the grove for early signs of scab on leaves and shoots before the disease reaches the fruit.",
+    "Keep records of affected trees and note whether certain areas of the grove are consistently more affected — this may indicate drainage or airflow problems.",
+    "Discuss a seasonal management plan with a local agricultural extension officer before the onset of the rainy season."
+  ]
+}

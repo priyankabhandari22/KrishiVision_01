@@ -1,0 +1,31 @@
+{
+  "crop": "guava",
+  "disease": "Red rust",
+  "status": "diseased",
+  "disclaimer": "This is general guidance only and is not a substitute for advice from a qualified agricultural extension officer or plant pathologist. Local regulations and approved practices may vary.",
+
+  "description": "Red Rust on guava is caused by a parasitic green alga (Cephaleuros virescens) rather than a fungus or bacterium. It appears as slightly raised, velvety, orange-red or rust-coloured circular patches on the upper surface of leaves, and sometimes on stems and fruit. In warm and humid conditions the alga spreads easily. On its own it rarely kills a tree, but heavy infestations weaken the plant, reduce photosynthesis, and can damage young stems. It is commonly found on trees that are already stressed by poor nutrition or overcrowded canopies.",
+
+  "immediate_actions": [
+    "Remove and destroy heavily infected leaves and stems — do not compost them.",
+    "Improve air circulation around affected trees through selective pruning of overcrowded branches.",
+    "Avoid excessive moisture on the leaf surface — adjust irrigation to keep foliage as dry as possible.",
+    "Check the overall health of the tree: poor nutrition and stress make trees more susceptible.",
+    "Consult a local agricultural extension officer for advice on approved algal management options if the infestation is severe."
+  ],
+
+  "spread_prevention": [
+    "Prune trees regularly to maintain an open canopy and reduce the humidity that favours algal growth.",
+    "Avoid overhead irrigation — use drip or ground-level methods that keep the foliage dry.",
+    "Maintain adequate tree nutrition — healthy, vigorous trees are less susceptible.",
+    "Remove and destroy infected plant material promptly to reduce the source of spread.",
+    "Disinfect pruning tools between trees to prevent mechanical transfer."
+  ],
+
+  "long_term_monitoring": [
+    "Inspect leaves and stems regularly during warm, wet seasons when the alga is most active.",
+    "Pay particular attention to the upper leaf surfaces where rust-coloured patches first appear.",
+    "Monitor overall tree vigour — repeated or worsening infestations may indicate underlying nutritional or drainage problems.",
+    "Consult a local agricultural extension officer if Red Rust is persistent despite improved canopy management."
+  ]
+}

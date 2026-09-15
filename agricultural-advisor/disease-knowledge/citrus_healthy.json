@@ -1,0 +1,28 @@
+{
+  "crop": "citrus",
+  "disease": "Healthy",
+  "status": "healthy",
+  "disclaimer": "This is general guidance only and is not a substitute for advice from a qualified agricultural extension officer. Conditions and best practices may vary by region and citrus variety.",
+
+  "description": "No disease has been detected on this leaf. The tree appears healthy. Maintaining tree health through good agricultural practices is the most effective way to prevent diseases from taking hold.",
+
+  "immediate_actions": [
+    "No treatment is needed.",
+    "Continue routine care — watering, feeding, and canopy management.",
+    "Take this opportunity to inspect nearby trees as a precaution."
+  ],
+
+  "spread_prevention": [
+    "Maintain good orchard hygiene — remove fallen fruit, leaves, and dead wood regularly.",
+    "Avoid introducing untested plant material from outside the grove.",
+    "Disinfect pruning tools between trees as a routine habit, even when no disease is visible.",
+    "Ensure adequate spacing and pruning to maintain good airflow through the canopy."
+  ],
+
+  "long_term_monitoring": [
+    "Inspect leaves, fruit, and stems regularly — at least once a month and after any period of heavy rain or extreme weather.",
+    "Keep an eye on early warning signs such as unusual spots, yellowing, or leaf distortion.",
+    "Consult a local agricultural extension officer periodically for seasonal guidance and to stay informed about disease outbreaks in the region.",
+    "Keep records of the tree's condition over time — changes are easier to spot when you have a baseline."
+  ]
+}

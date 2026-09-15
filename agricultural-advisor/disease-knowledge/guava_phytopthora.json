@@ -1,0 +1,33 @@
+{
+  "crop": "guava",
+  "disease": "Phytopthora",
+  "status": "diseased",
+  "disclaimer": "This is general guidance only and is not a substitute for advice from a qualified agricultural extension officer or plant pathologist. Local regulations and approved practices may vary.",
+
+  "description": "Phytophthora in guava is caused by water mould-like organisms that thrive in poorly drained, waterlogged soil. It primarily attacks the root system and the base of the trunk (collar region), causing dark, water-soaked lesions that girdle the tree and cut off its ability to absorb water and nutrients. Affected trees show wilting, yellowing of leaves, sudden dieback of branches, and general decline — even when the soil appears moist. The disease can also cause a brown rot on fruit. It spreads rapidly through infected soil, irrigation water, and surface runoff.",
+
+  "immediate_actions": [
+    "Improve drainage around the affected tree immediately — remove standing water and avoid over-irrigation.",
+    "Do not waterlog the root zone of affected or neighbouring trees.",
+    "Examine the base of the trunk for dark, discoloured, or sunken bark — scrape carefully with a clean tool to check.",
+    "Avoid moving soil, water, or plant material from the infected area to other parts of the grove.",
+    "Consult a local agricultural extension officer urgently for guidance on approved management options — severely affected trees may not recover."
+  ],
+
+  "spread_prevention": [
+    "Ensure the orchard has good drainage infrastructure — Phytophthora cannot establish without waterlogged conditions.",
+    "Avoid planting guava in low-lying areas prone to flooding or poor drainage.",
+    "Do not reuse soil or water from areas where Phytophthora has been confirmed.",
+    "Clean and disinfect footwear, tools, and equipment before moving between the infected area and healthy parts of the grove.",
+    "Use raised planting mounds or beds in areas with heavy clay soil to keep the root crown well above the waterline.",
+    "Use certified, disease-free planting material from reputable nurseries."
+  ],
+
+  "long_term_monitoring": [
+    "Inspect the trunk base and root zone of all trees regularly, especially after heavy rainfall.",
+    "Monitor tree canopy health — sudden wilting or unexplained yellowing in well-watered trees is an early warning sign.",
+    "Keep records of affected trees and observe whether the problem is concentrated in low-lying or poorly drained parts of the grove.",
+    "Discuss long-term drainage improvement and replanting strategies with a local agricultural extension officer.",
+    "Avoid replanting susceptible guava varieties in areas where Phytophthora has been confirmed without expert guidance."
+  ]
+}

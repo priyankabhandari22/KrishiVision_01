@@ -1,0 +1,33 @@
+{
+  "crop": "guava",
+  "disease": "Styler and Root",
+  "status": "diseased",
+  "disclaimer": "This is general guidance only and is not a substitute for advice from a qualified agricultural extension officer or plant pathologist. Local regulations and approved practices may vary.",
+
+  "description": "This classification covers disease conditions affecting the stylar end of guava fruit and the root system. Stylar end problems appear as brown, sunken, or rotting areas at the tip (blossom end) of the fruit, often caused by fungal infection entering through the flower scar after fruit set. Root problems in guava include root rot and decline caused by fungal or soil-borne pathogens, which leads to reduced nutrient and water uptake, wilting, yellowing, and overall tree decline. Both conditions are worsened by poor drainage, wounds, and high humidity. Together they can significantly reduce both fruit quality and tree longevity.",
+
+  "immediate_actions": [
+    "Remove and destroy affected fruit showing stylar end rot — do not leave it on the ground or on the tree.",
+    "Inspect the base of the trunk and exposed roots for dark, discoloured, or soft tissue indicating root problems.",
+    "Avoid waterlogging — check and improve drainage around the root zone immediately.",
+    "Avoid causing wounds to roots during cultivation or weeding near the tree base.",
+    "Consult a local agricultural extension officer promptly if significant root decline or widespread fruit rot is observed."
+  ],
+
+  "spread_prevention": [
+    "Ensure good drainage in the orchard — both stylar and root diseases are significantly worse in waterlogged conditions.",
+    "Avoid mechanical damage to roots during weeding or soil work near the tree base.",
+    "Remove infected fruit and plant debris promptly to reduce the fungal spore load in the grove.",
+    "Avoid overhead irrigation that keeps the fruit surface and blossom-end area wet for extended periods.",
+    "Disinfect tools that contact soil or diseased tissue before using them on other trees.",
+    "Maintain adequate spacing between trees to reduce humidity in the canopy."
+  ],
+
+  "long_term_monitoring": [
+    "Inspect fruit at the stylar end regularly as it develops — early-stage lesions are easier to manage.",
+    "Monitor the root zone and trunk base of trees, especially after heavy rainfall or flooding.",
+    "Track whether stylar end rot is concentrated on particular trees or in specific areas of the grove — this can point to drainage or soil problems.",
+    "Observe overall tree vigour: slow growth, yellowing leaves, and wilting despite adequate water may indicate root system damage.",
+    "Work with a local agricultural extension officer to evaluate whether soil conditions or planting layout need to change for the long term."
+  ]
+}

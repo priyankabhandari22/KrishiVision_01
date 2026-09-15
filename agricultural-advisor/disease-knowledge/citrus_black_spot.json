@@ -1,0 +1,31 @@
+{
+  "crop": "citrus",
+  "disease": "Black spot",
+  "status": "diseased",
+  "disclaimer": "This is general guidance only and is not a substitute for advice from a qualified agricultural extension officer or plant pathologist. Local regulations and approved practices may vary.",
+
+  "description": "Citrus Black Spot is a fungal disease that causes dark, sunken spots on the skin of citrus fruit. The spots may appear as small, hard, raised dots or larger depressed lesions with dark borders. While the fruit pulp is usually unaffected and still edible, heavily spotted fruit is often unmarketable. Infected leaves can also show spots, and severe infections may cause early fruit drop.",
+
+  "immediate_actions": [
+    "Remove and destroy visibly infected fruit and fallen fruit from around the tree — do not compost them.",
+    "Rake up and remove leaf litter and fallen debris from under affected trees, as these harbour fungal spores.",
+    "Avoid overhead irrigation, which spreads spores through water splash.",
+    "Do not move plant material (cuttings, fruit, leaves) from an infected grove to an unaffected one.",
+    "Consult a local agricultural extension officer for approved fungicide treatment options suitable for your region."
+  ],
+
+  "spread_prevention": [
+    "Prune trees to improve airflow and reduce humidity within the canopy — dense canopies favour fungal growth.",
+    "Disinfect pruning tools between trees to avoid mechanical spread of spores.",
+    "Avoid working in the grove when foliage is wet.",
+    "Use clean, certified disease-free planting material for any new trees.",
+    "Implement a monitoring schedule during warm, wet periods when the fungus is most active."
+  ],
+
+  "long_term_monitoring": [
+    "Inspect fruit and young leaves regularly during and after wet or humid weather.",
+    "Keep records of affected trees and areas so spread patterns can be tracked over time.",
+    "Discuss a seasonal management plan with a local agricultural extension officer before the rainy season.",
+    "Monitor neighbouring orchards and report unusual outbreaks to local agricultural authorities."
+  ]
+}

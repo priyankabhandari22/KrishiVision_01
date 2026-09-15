@@ -1,0 +1,30 @@
+{
+  "crop": "citrus",
+  "disease": "Melanose",
+  "status": "diseased",
+  "disclaimer": "This is general guidance only and is not a substitute for advice from a qualified agricultural extension officer or plant pathologist. Local regulations and approved practices may vary.",
+
+  "description": "Melanose is a fungal disease of citrus caused by dead and dying wood on the tree. It appears as small, raised, dark-brown or rust-coloured specks on the surface of fruit, leaves, and young stems. These specks often feel rough or sandpaper-like to the touch. On fruit, rain can wash the spores downward, creating characteristic tear-stain or mudcake patterns. Melanose does not affect the inside of the fruit, but it significantly reduces its market value.",
+
+  "immediate_actions": [
+    "Prune out all dead and dying wood from the tree — this is the primary source of the fungus that causes Melanose.",
+    "Remove pruned wood from the grove immediately and destroy it; do not leave it on the ground.",
+    "Avoid overhead irrigation and any practices that keep the canopy wet for extended periods.",
+    "Do not handle or transport affected plant material to healthy parts of the grove.",
+    "Consult a local agricultural extension officer for approved treatment options if the infection is widespread."
+  ],
+
+  "spread_prevention": [
+    "Carry out regular pruning to remove dead wood before the start of each wet season.",
+    "Disinfect pruning tools between trees to prevent mechanical transfer of fungal spores.",
+    "Improve canopy ventilation through pruning to reduce the moisture levels that favour the fungus.",
+    "Avoid wetting foliage and fruit unnecessarily during irrigation."
+  ],
+
+  "long_term_monitoring": [
+    "Inspect trees for dead wood and Melanose symptoms regularly, particularly after storms or heavy rains.",
+    "Monitor young flushes of growth, which are most susceptible to infection.",
+    "Keep pruning records and track which trees show repeated infections — they may require more aggressive dead-wood management.",
+    "Discuss a seasonal management and pruning schedule with a local agricultural extension officer."
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "crop": "citrus",
+  "disease": "Canker",
+  "status": "diseased",
+  "disclaimer": "This is general guidance only and is not a substitute for advice from a qualified agricultural extension officer or plant pathologist. Citrus Canker may be subject to mandatory reporting obligations in some regions — check with your local agricultural authority. Local regulations and approved practices may vary.",
+
+  "description": "Citrus Canker is a serious bacterial disease that causes raised, corky, crater-like lesions surrounded by a yellow, water-soaked halo on leaves, stems, thorns, and fruit. The spots look similar on both sides of a leaf. Infected fruit becomes unmarketable and may drop early. The disease spreads quickly through wind-driven rain, contact with infected plant material, and contaminated tools or clothing. It can affect most citrus varieties and spreads rapidly during warm, wet, and windy weather.",
+
+  "immediate_actions": [
+    "Stop all pruning and movement of plant material from affected trees until the situation is assessed.",
+    "Do not move any leaves, fruit, or cuttings from the infected area to other parts of the grove or to other farms.",
+    "Immediately disinfect any tools, footwear, and clothing that have been in contact with affected trees.",
+    "Report the suspected infection to your local agricultural department — Citrus Canker may be a notifiable disease in your region.",
+    "Consult a local agricultural extension officer urgently for guidance on approved management and containment measures."
+  ],
+
+  "spread_prevention": [
+    "Establish windbreaks around the orchard to reduce the wind-driven rain that spreads the bacteria.",
+    "Avoid overhead irrigation — use drip or ground-level irrigation instead.",
+    "Strictly disinfect all cutting tools between every tree during pruning operations.",
+    "Restrict movement of people, equipment, and plant material between infected and healthy areas of the grove.",
+    "Use certified disease-free planting material only for new plantings.",
+    "Train farm workers on proper hygiene protocols, including disinfecting footwear before entering the grove."
+  ],
+
+  "long_term_monitoring": [
+    "Inspect trees regularly, especially young growth flushes and after rain and wind events.",
+    "Keep detailed records of which trees are infected and how the disease progresses across the grove.",
+    "Work with a local agricultural extension officer to develop a long-term management and monitoring plan.",
+    "Be aware that severely infected trees may need to be removed to protect the rest of the grove — seek expert guidance before making this decision.",
+    "Monitor any new plantings closely in the seasons following an outbreak."
+  ]
+}

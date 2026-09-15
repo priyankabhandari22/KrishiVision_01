@@ -1,0 +1,32 @@
+{
+  "crop": "citrus",
+  "disease": "Greening",
+  "status": "diseased",
+  "disclaimer": "This is general guidance only and is not a substitute for advice from a qualified agricultural extension officer or plant pathologist. Citrus Greening (HLB) is considered one of the most destructive citrus diseases in the world and may be subject to mandatory reporting obligations in some regions — check with your local agricultural authority immediately. Local regulations and approved practices may vary.",
+
+  "description": "Citrus Greening, also known as Huanglongbing (HLB) or Yellow Dragon Disease, is a severe and currently incurable bacterial disease. It is spread from tree to tree by a small sap-sucking insect called the Asian citrus psyllid. Infected trees show blotchy, uneven yellowing of leaves (which looks different from ordinary nutrient deficiency), stunted and asymmetrical leaf patterns, small and lopsided fruit that tastes bitter and has green patches even when ripe. Once a tree is infected, it cannot be cured — it will gradually decline and stop producing usable fruit. Managing the psyllid insect that carries the disease is the primary defence.",
+
+  "immediate_actions": [
+    "Report the suspected infection to your local agricultural department immediately — Citrus Greening is a notifiable disease in many regions.",
+    "Do not move any plant material, budwood, or fruit from the affected grove to other locations.",
+    "Have the suspected tree inspected and confirmed by a qualified plant pathologist before taking further action.",
+    "Consult a local agricultural extension officer urgently — severely affected trees may need to be removed to prevent the disease from spreading to healthy trees.",
+    "Strictly avoid moving the psyllid insect by limiting unnecessary entry into the affected grove."
+  ],
+
+  "spread_prevention": [
+    "Managing the Asian citrus psyllid insect is the primary way to slow the spread of Greening — consult a local agricultural extension officer for approved psyllid management approaches in your region.",
+    "Remove and destroy confirmed infected trees promptly to reduce the bacterial source available to psyllids.",
+    "Use certified disease-free, psyllid-free planting material for any new plantings.",
+    "Avoid planting new citrus trees near confirmed outbreak areas.",
+    "Inspect new planting material carefully before introducing it to the grove."
+  ],
+
+  "long_term_monitoring": [
+    "Inspect all trees regularly for early symptoms: blotchy yellowing, small lopsided fruit, and stunted shoots.",
+    "Monitor psyllid populations consistently — early detection and management of the insect is the key long-term defence.",
+    "Keep detailed records of symptomatic trees and track the spread pattern across the grove.",
+    "Work closely with local agricultural authorities and extension officers to stay updated on approved management programs in your area.",
+    "Consider whether a replanting strategy using tolerant or certified clean varieties is appropriate — discuss with a specialist before committing."
+  ]
+}

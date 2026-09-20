@@ -4,13 +4,17 @@ main.py
 FastAPI application entry point for KrishiVision backend service.
 """
 
+import os
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
+from dotenv import load_dotenv
 from backend.routes import router as api_router
 from backend.middleware import OptionalApiKeyMiddleware
+
+load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
 app = FastAPI(
     title="KrishiVision API",
@@ -18,9 +22,18 @@ app = FastAPI(
     version="1.0.0",
 )
 
+_CORS_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv(
+        "KRISHIVISION_CORS_ORIGINS",
+        "http://127.0.0.1:8000,http://localhost:8000,http://127.0.0.1:5173,http://localhost:5173",
+    ).split(",")
+    if origin.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

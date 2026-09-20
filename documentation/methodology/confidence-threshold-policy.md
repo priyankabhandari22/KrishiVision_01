@@ -36,15 +36,15 @@ No other file in this repository may define or duplicate this value. All modules
 is_confident = confidence >= CONFIDENCE_THRESHOLD
 ```
 
-Where `confidence` is the softmax probability of the winning class (0.0–1.0), as output by the ResNet50 model.
+Where `confidence` is the softmax probability of the winning class (0.0–1.0), as output by the per-crop ResNet50 models.
 
 ---
 
 ## Why 70%?
 
-The model achieves **84.09% overall accuracy** on its test set. A threshold of 70% was chosen based on the following reasoning:
+The per-crop ResNet50 models achieve **90.52% combined test accuracy** on the test set (guava **93.75%**, citrus **88.82%**). A threshold of 70% was chosen based on the following reasoning:
 
-- **Below the model's average accuracy**: The model's base rate is 84%. A threshold lower than that would mark as uncertain predictions the model is typically correct about. 70% sets a meaningful floor — predictions below it are outliers where the model is notably less sure than usual.
+- **Below the model's average accuracy**: The models' combined base rate is roughly 90%. A threshold lower than that would mark as uncertain predictions the model is typically correct about. 70% sets a meaningful floor — predictions below it are outliers where the model is notably less sure than usual.
 - **Practical field conditions**: Farmers photograph leaves in variable lighting, at irregular angles, and with partial occlusion. The threshold is intentionally not set too high (e.g. 90%) to avoid over-triggering warnings under normal field conditions.
 - **Conservative default**: For a crop disease advisory system, a false negative (confident wrong answer) is more harmful than a false positive (unnecessary uncertainty warning). 70% is a conservative starting point that can be tuned upward once real-world false-negative rates are measured.
 

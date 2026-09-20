@@ -243,12 +243,13 @@ def generate_gradcam(
     Parameters
     ----------
     model : keras.Model
-        The loaded KrishiVision ResNet50 model (from prediction.load_model()).
+        The loaded per-crop KrishiVision ResNet50 model (returned by prediction._model).
     preprocessed_tensor : np.ndarray
         Shape (1, 224, 224, 3) float32 — the same tensor passed to predict().
         Not re-preprocessed here.
     class_index : int
-        Winning class index (0–9) returned by the prediction wrapper.
+        Winning class index (0–4) returned by the prediction wrapper for the
+        selected per-crop model.
     original_image : PIL.Image.Image
         The original, un-preprocessed leaf image (for overlay background).
     output_dir : Path | str | None
@@ -269,12 +270,12 @@ def generate_gradcam(
     GradCAMError
         If the named conv layer is not found or gradients cannot be computed.
     ValueError
-        If class_index is outside 0–9.
+        If class_index is outside 0–4.
     """
-    if not (0 <= class_index <= 9):
+    if not (0 <= class_index <= 4):
         raise ValueError(
-            f"class_index must be in range 0–9 (received {class_index}). "
-            "This should be the argmax index from the prediction wrapper."
+            f"class_index must be in range 0–4 (received {class_index}). "
+            "This should be the argmax index from the winning crop model."
         )
 
     # --- Resolve and prepare output directory -----------------------------

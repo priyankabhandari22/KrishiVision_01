@@ -14,6 +14,7 @@ Responsibilities:
 from __future__ import annotations
 
 import logging
+from typing import Optional
 from fastapi import HTTPException, UploadFile, status
 
 from agricultural_advisor.recommendations import UnknownClassError
@@ -25,7 +26,7 @@ from disease_detection.preprocessing import ImageValidationError
 logger = logging.getLogger(__name__)
 
 
-async def handle_prediction(file: UploadFile) -> AdvisoryResponse:
+async def handle_prediction(file: UploadFile, user_id: Optional[str] = None) -> AdvisoryResponse:
     """
     Controller logic for POST /predict.
 
@@ -33,6 +34,9 @@ async def handle_prediction(file: UploadFile) -> AdvisoryResponse:
     ----------
     file : UploadFile
         Uploaded leaf image file from the client.
+    user_id : str, optional
+        ID of the authenticated farmer (from the session). Ownership is never
+        taken from the request body.
 
     Returns
     -------
@@ -72,7 +76,7 @@ async def handle_prediction(file: UploadFile) -> AdvisoryResponse:
 
     # 3. Call pipeline orchestration service with exception handling
     try:
-        response: AdvisoryResponse = run_pipeline(file_bytes, file.filename)
+        response: AdvisoryResponse = run_pipeline(file_bytes, file.filename, user_id=user_id)
         return response
 
     except ImageValidationError as exc:

@@ -12,7 +12,7 @@ Image Preprocessing
     │
     ▼
 Disease Classification
-    (ResNet50 Model - 84.09% accuracy selected)
+    (Per-crop ResNet50 models - 90.5% combined accuracy selected)
     │
     ├── Output: Crop + Disease + Confidence Score
     │

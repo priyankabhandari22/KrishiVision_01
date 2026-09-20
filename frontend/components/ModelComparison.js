@@ -1,7 +1,7 @@
 /**
  * ModelComparison.js
  * ------------------
- * Interactive view comparing ResNet50 (84.09%) vs EfficientNet-B0 (77.53%) vs MobileNetV3 (62.12%).
+ * Interactive view comparing ResNet50 (90.52%) vs EfficientNet-B0 (82.76%) vs MobileNetV3 (80.61%).
  */
 
 export function createModelComparisonView() {
@@ -11,7 +11,7 @@ export function createModelComparisonView() {
     container.innerHTML = `
         <div class="view-header">
             <h2>Model Benchmark & Research Comparison 📊</h2>
-            <p>Evaluation conducted across Citrus and Guava leaf disease datasets in Google Colab.</p>
+            <p>Evaluation conducted across Citrus and Guava leaf datasets on a 70/15/15 stratified split (per-crop ResNet50 models).</p>
         </div>
 
         <!-- Model Summary Cards -->
@@ -20,12 +20,14 @@ export function createModelComparisonView() {
                 <div class="model-badge winner-badge">🏆 Selected for Production</div>
                 <h3>ResNet50</h3>
                 <div class="model-stat">
-                    <span class="stat-number">84.09%</span>
-                    <span class="stat-desc">Test Accuracy</span>
+                    <span class="stat-number">90.52%</span>
+                    <span class="stat-desc">Combined Test Accuracy</span>
                 </div>
                 <ul class="model-specs">
                     <li><strong>Architecture:</strong> Deep Residual Network (50 layers)</li>
-                    <li><strong>Parameters:</strong> ~25.6 Million</li>
+                    <li><strong>Parameters:</strong> ~25.6 Million per crop</li>
+                    <li><strong>Guava accuracy:</strong> 93.75%</li>
+                    <li><strong>Citrus accuracy:</strong> 88.82%</li>
                     <li><strong>Grad-CAM Quality:</strong> Outstanding (conv5_block3_out)</li>
                     <li><strong>Key Advantage:</strong> Superior accuracy on complex lesion patterns</li>
                 </ul>
@@ -35,14 +37,14 @@ export function createModelComparisonView() {
                 <div class="model-badge">Evaluated Candidate</div>
                 <h3>EfficientNet-B0</h3>
                 <div class="model-stat">
-                    <span class="stat-number">77.53%</span>
+                    <span class="stat-number">82.76%</span>
                     <span class="stat-desc">Test Accuracy</span>
                 </div>
                 <ul class="model-specs">
                     <li><strong>Architecture:</strong> Compound Scaled CNN</li>
                     <li><strong>Parameters:</strong> ~5.3 Million</li>
                     <li><strong>Grad-CAM Quality:</strong> Moderate feature localization</li>
-                    <li><strong>Tradeoff:</strong> Lower accuracy (-6.56% vs ResNet50)</li>
+                    <li><strong>Tradeoff:</strong> Lower accuracy (-7.76% vs ResNet50)</li>
                 </ul>
             </div>
 
@@ -50,7 +52,7 @@ export function createModelComparisonView() {
                 <div class="model-badge">Evaluated Candidate</div>
                 <h3>MobileNetV3 Large</h3>
                 <div class="model-stat">
-                    <span class="stat-number">62.12%</span>
+                    <span class="stat-number">80.61%</span>
                     <span class="stat-desc">Test Accuracy</span>
                 </div>
                 <ul class="model-specs">
@@ -69,19 +71,19 @@ export function createModelComparisonView() {
                 <div class="bar-row">
                     <span class="bar-label">ResNet50 (Selected)</span>
                     <div class="bar-track">
-                        <div class="bar-fill winner-fill" style="width: 84.09%;">84.09%</div>
+                        <div class="bar-fill winner-fill" style="width: 90.52%;">90.52%</div>
                     </div>
                 </div>
                 <div class="bar-row">
                     <span class="bar-label">EfficientNet-B0</span>
                     <div class="bar-track">
-                        <div class="bar-fill" style="width: 77.53%;">77.53%</div>
+                        <div class="bar-fill" style="width: 82.76%;">82.76%</div>
                     </div>
                 </div>
                 <div class="bar-row">
                     <span class="bar-label">MobileNetV3</span>
                     <div class="bar-track">
-                        <div class="bar-fill error-fill" style="width: 62.12%;">62.12%</div>
+                        <div class="bar-fill error-fill" style="width: 80.61%;">80.61%</div>
                     </div>
                 </div>
             </div>
@@ -102,13 +104,13 @@ export function createModelComparisonView() {
                 <tbody>
                     <tr>
                         <td><strong>Classification Accuracy</strong></td>
-                        <td><span class="pill pill-success">84.09%</span></td>
-                        <td><span class="pill pill-warning">77.53%</span></td>
-                        <td><span class="pill pill-danger">62.12%</span></td>
+                        <td><span class="pill pill-success">90.52%</span></td>
+                        <td><span class="pill pill-warning">82.76%</span></td>
+                        <td><span class="pill pill-danger">80.61%</span></td>
                     </tr>
                     <tr>
                         <td><strong>Model File Size</strong></td>
-                        <td>~95 MB</td>
+                        <td>~95 MB each (per-crop ×2)</td>
                         <td>~17 MB</td>
                         <td>~13 MB</td>
                     </tr>

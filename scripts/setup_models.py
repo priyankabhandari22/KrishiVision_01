@@ -1,7 +1,7 @@
 """
 setup_models.py
 ---------------
-Copy trained ResNet50 checkpoints from the ks training project into
+Copy the per-crop ResNet50 checkpoints from the ks training project into
 disease-detection/models/ so the inference pipeline can start.
 
 Usage:
@@ -15,11 +15,11 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 MODELS_DIR = PROJECT_ROOT / "disease-detection" / "models"
-KS_OUTPUTS = PROJECT_ROOT.parent / "ks" / "outputs"
+KS_OUTPUTS = PROJECT_ROOT.parent / "ks" / "outputs_test3"
 
 COPY_MAP = {
-    "best_model_citrus_ResNet50.keras": "KrishiVision_Citrus_ResNet50.keras",
-    "best_model_guava_ResNet50.keras": "KrishiVision_Guava_ResNet50.keras",
+    "best_guava_ResNet50.keras": "best_guava_ResNet50.keras",
+    "best_citrus_ResNet50.keras": "best_citrus_ResNet50.keras",
 }
 
 
@@ -37,16 +37,10 @@ def main() -> None:
         print(f"COPY  {source.name} -> {dest.relative_to(PROJECT_ROOT)}")
         copied += 1
 
-    combined = MODELS_DIR / "KrishiVision_ResNet50.keras"
-    citrus = MODELS_DIR / "KrishiVision_Citrus_ResNet50.keras"
-    if citrus.exists() and not combined.exists():
-        shutil.copy2(citrus, combined)
-        print(f"COPY  {citrus.name} -> {combined.relative_to(PROJECT_ROOT)} (combined alias)")
-
     if copied == 0:
         raise SystemExit(
-            "No model files copied. Place KrishiVision_ResNet50.keras or crop-specific "
-            "checkpoints in disease-detection/models/ manually."
+            "No model files copied. Place best_guava_ResNet50.keras and "
+            "best_citrus_ResNet50.keras in disease-detection/models/ manually."
         )
 
     print(f"Done. {copied} crop model(s) ready in {MODELS_DIR}")

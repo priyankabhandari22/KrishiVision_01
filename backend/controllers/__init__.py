@@ -12,6 +12,12 @@ from .history_controller import (
     handle_clear_history,
     handle_get_analytics,
 )
+from .auth_controller import (
+    handle_register,
+    handle_login,
+    handle_me,
+    handle_logout,
+)
 
 __all__ = [
     "handle_health",
@@ -20,5 +26,9 @@ __all__ = [
     "handle_get_prediction_by_id",
     "handle_clear_history",
     "handle_get_analytics",
+    "handle_register",
+    "handle_login",
+    "handle_me",
+    "handle_logout",
 ]
 

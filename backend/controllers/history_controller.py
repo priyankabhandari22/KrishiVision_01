@@ -17,15 +17,16 @@ from backend.services.history_service import (
 
 
 def handle_get_history(
+    user_id: str,
     crop: Optional[str] = None,
     disease: Optional[str] = None,
     status_filter: Optional[str] = None,
     limit: int = 100,
 ):
-    """Retrieve filtered prediction history."""
+    """Retrieve the authenticated user's filtered prediction history."""
     try:
         history = get_all_history(
-            crop=crop, disease=disease, status=status_filter, limit=limit
+            user_id=user_id, crop=crop, disease=disease, status=status_filter, limit=limit
         )
         return {"count": len(history), "history": history}
     except Exception as exc:
@@ -35,9 +36,13 @@ def handle_get_history(
         )
 
 
-def handle_get_prediction_by_id(record_id: str):
-    """Retrieve single prediction record by ID."""
-    record = get_prediction_by_id(record_id)
+def handle_get_prediction_by_id(record_id: str, user_id: str):
+    """Retrieve a single prediction record owned by the current user.
+
+    Ownership is enforced here so a farmer can never retrieve, or even
+    probe for, another user's record - it simply reads as not found.
+    """
+    record = get_prediction_by_id(record_id, user_id=user_id)
     if not record:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -46,10 +51,10 @@ def handle_get_prediction_by_id(record_id: str):
     return record
 
 
-def handle_clear_history():
-    """Clear all prediction history logs."""
+def handle_clear_history(user_id: str):
+    """Clear the current user's prediction history only."""
     try:
-        cleared_count = clear_history()
+        cleared_count = clear_history(user_id=user_id)
         return {"message": "History cleared successfully.", "cleared_count": cleared_count}
     except Exception as exc:
         raise HTTPException(
@@ -58,10 +63,10 @@ def handle_clear_history():
         )
 
 
-def handle_get_analytics():
-    """Retrieve system analytics & model benchmark breakdown."""
+def handle_get_analytics(user_id: str):
+    """Retrieve personal analytics computed from the current user's records."""
     try:
-        return get_analytics_summary()
+        return get_analytics_summary(user_id=user_id)
     except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

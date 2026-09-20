@@ -6,7 +6,7 @@
  * Steps:
  * 1. 🌿 Upload Leaf
  * 2. 🔬 Disease Detection
- * 3. 🏆 ResNet50 — 84.09%
+ * 3. 🏆 ResNet50 — 90.5%
  * 4. 📊 Confidence
  * 5. 🔥 Grad-CAM
  * 6. 🤖 AI Agricultural Advisor
@@ -21,7 +21,7 @@
 export const WORKFLOW_STEPS = [
     { id: 'upload', icon: '🌿', label: 'Upload Leaf' },
     { id: 'detect', icon: '🔬', label: 'Disease Detection' },
-    { id: 'resnet', icon: '🏆', label: 'ResNet50 (84.09%)' },
+    { id: 'resnet', icon: '🏆', label: 'ResNet50 (90.5%)' },
     { id: 'confidence', icon: '📊', label: 'Confidence Score' },
     { id: 'gradcam', icon: '🔥', label: 'Grad-CAM Heatmap' },
     { id: 'advisor', icon: '🤖', label: 'AI Advisor' },
@@ -40,7 +40,7 @@ export function createWorkflowVisualizer() {
     container.innerHTML = `
         <div class="workflow-header">
             <h3>Pipeline Execution Flow</h3>
-            <span class="workflow-badge">ResNet50 Engine • 84.09% Accuracy</span>
+            <span class="workflow-badge">ResNet50 Engine • 90.5% Accuracy</span>
         </div>
         <div class="workflow-stepper">
             ${WORKFLOW_STEPS.map((step, idx) => `

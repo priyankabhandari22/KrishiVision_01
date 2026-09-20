@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import Optional
 
 from agricultural_advisor.prevention import get_prevention_plan
 from agricultural_advisor.recommendations import get_recommendation
@@ -29,22 +30,11 @@ logger = logging.getLogger(__name__)
 # Directory for saved heatmap images
 HEATMAP_DIR = Path(__file__).resolve().parents[1] / "static" / "heatmaps"
 
-# Reverse lookup map: (crop, disease) -> class_index (0-9)
-_CLASS_INDEX_MAP: dict[tuple[str, str], int] = {
-    ("guava",  "Disease Free"):    0,
-    ("guava",  "Phytopthora"):     1,
-    ("guava",  "Red rust"):        2,
-    ("guava",  "Scab"):            3,
-    ("guava",  "Styler and Root"): 4,
-    ("citrus", "Black spot"):      5,
-    ("citrus", "Melanose"):        6,
-    ("citrus", "Canker"):          7,
-    ("citrus", "Greening"):        8,
-    ("citrus", "Healthy"):         9,
-}
+# Note: the class index from the prediction wrapper is now the index within the
+# winning crop's 5-class model (0–4), and `_model` is that crop's ResNet50 model.
 
 
-def run_pipeline(file_bytes: bytes, filename: str) -> AdvisoryResponse:
+def run_pipeline(file_bytes: bytes, filename: str, user_id: Optional[str] = None) -> AdvisoryResponse:
     """
     Execute the full end-to-end KrishiVision pipeline.
 
@@ -54,6 +44,9 @@ def run_pipeline(file_bytes: bytes, filename: str) -> AdvisoryResponse:
         Raw bytes from the uploaded image.
     filename : str
         Original filename of the uploaded image.
+    user_id : str, optional
+        ID of the authenticated farmer owning this prediction. Ownership is
+        derived from the authenticated session, never from the client.
 
     Returns
     -------
@@ -140,7 +133,7 @@ def run_pipeline(file_bytes: bytes, filename: str) -> AdvisoryResponse:
     # 11. Record prediction in history service
     try:
         from backend.services.history_service import record_prediction
-        record_prediction(advisory_response.model_dump(), filename=filename)
+        record_prediction(advisory_response.model_dump(), filename=filename, user_id=user_id)
     except Exception as exc:
         logger.error(f"Failed to record prediction history: {exc}")
 

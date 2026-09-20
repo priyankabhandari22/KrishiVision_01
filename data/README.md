@@ -15,6 +15,6 @@ For reference, the model was trained on the following 10 classes across two crop
 
 This repository is designed **strictly for inference**. 
 
-- It consumes the pre-trained model checkpoint located at `disease-detection/models/KrishiVision_ResNet50.keras`.
+- It consumes the pre-trained per-crop model checkpoints located at `disease-detection/models/best_guava_ResNet50.keras` and `disease-detection/models/best_citrus_ResNet50.keras`.
 - It does not contain, require, or maintain any model training pipeline.
 - If retraining is ever required in the future, it must be performed externally (e.g., in Google Colab) in the same manner as the original model training.

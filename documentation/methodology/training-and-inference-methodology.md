@@ -15,7 +15,7 @@ The original training workflow is:
 5. Split the dataset into training, validation, and test sets.
 6. Compare transfer-learning models and evaluate accuracy, precision, recall,
    F1 score, and the confusion matrix.
-7. Select the trained ResNet50 checkpoint used by this application.
+7. Select the per-crop trained ResNet50 checkpoints used by this application.
 
 The dataset, training loop, augmentation, and model evaluation are not run by
 the application and are not included in this repository.
@@ -29,8 +29,8 @@ Uploaded leaf image
     -> validation
     -> resize to 224 x 224
     -> ResNet50 normalization
-    -> KrishiVision_ResNet50.keras
-    -> one of 10 class labels
+    -> best_guava_ResNet50.keras / best_citrus_ResNet50.keras
+    -> one of 5 labels from the winning crop's model
     -> confidence and health status
     -> Grad-CAM explanation
     -> verified agricultural advisory
@@ -44,19 +44,28 @@ different input distribution than the one it learned.
 
 ## Class Contract
 
-The combined model has one 10-class output head:
+The application uses two per-crop ResNet50 models, each with its own 5-class
+output head. The crop whose model produces the highest winning softmax score
+decides the prediction.
 
-| Index | Crop | Class |
-|---:|---|---|
-| 0 | Guava | Disease Free |
-| 1 | Guava | Phytopthora |
-| 2 | Guava | Red rust |
-| 3 | Guava | Scab |
-| 4 | Guava | Styler and Root |
-| 5 | Citrus | Black spot |
-| 6 | Citrus | Melanose |
-| 7 | Citrus | Canker |
-| 8 | Citrus | Greening |
-| 9 | Citrus | Healthy |
+Guava model (`best_guava_ResNet50.keras`):
 
-The application does not retrain or modify the checkpoint.
+| Index | Class |
+|---:|---|
+| 0 | Phytopthora |
+| 1 | Red rust |
+| 2 | Scab |
+| 3 | Styler and Root |
+| 4 | Disease Free |
+
+Citrus model (`best_citrus_ResNet50.keras`):
+
+| Index | Class |
+|---:|---|
+| 0 | Black spot |
+| 1 | Canker |
+| 2 | Greening |
+| 3 | Healthy |
+| 4 | Melanose |
+
+The application does not retrain or modify the checkpoints.

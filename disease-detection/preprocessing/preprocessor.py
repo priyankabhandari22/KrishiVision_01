@@ -4,7 +4,8 @@ preprocessor.py
 Inference-time image preprocessing for KrishiVision.
 
 Produces a normalised tensor that matches the exact input contract of the
-ResNet50 checkpoint at disease-detection/models/KrishiVision_ResNet50.keras.
+per-crop ResNet50 checkpoints in disease-detection/models/ (best_guava_ResNet50.keras,
+best_citrus_ResNet50.keras).
 
 ResNet50 input contract (Keras / TensorFlow):
   - Shape  : (1, 224, 224, 3)   — batch of 1, HWC ordering

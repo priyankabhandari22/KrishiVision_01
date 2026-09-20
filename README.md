@@ -4,7 +4,7 @@
 Farmers struggle to manually identify crop leaf diseases from spots, discoloration, or lesions. Delayed or inaccurate identification leads to rapid disease spread and severe crop loss.
 
 ## Solution
-KrishiVision is a leaf disease detection and agricultural guidance system for Citrus and Guava leaves. It classifies leaf diseases using a ResNet50 model (84.09% accuracy), provides visual explanations via Grad-CAM heatmaps, and delivers verified, farmer-friendly agricultural advisory without inventing treatments or dosages.
+KrishiVision is a leaf disease detection and agricultural guidance system for Citrus and Guava leaves. It classifies leaf diseases using per-crop ResNet50 models (90.5% combined test accuracy — guava 93.75%, citrus 88.82%), provides visual explanations via Grad-CAM heatmaps, and delivers verified, farmer-friendly agricultural advisory without inventing treatments or dosages.
 
 ## Supported Crops & Classes
 

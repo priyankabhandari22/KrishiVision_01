@@ -19,17 +19,23 @@ import leafPhoto from '../../assets/hero image.png';
 const workflow = ['Upload leaf', 'Detect disease', 'Explain signal', 'Advise action', 'Prevent spread', 'Save record'];
 
 const destinations = [
-  { title: 'Farmer scan', description: 'Upload a leaf, see the disease, the confidence, and what to do about it.', screen: 'farmer', icon: <Camera size={18} /> },
+  { title: 'Dashboard', description: 'Check your crop health, stats, and recent detections in one place.', screen: 'dashboard', icon: <Leaf size={18} /> },
+  { title: 'Detect Disease', description: 'Upload a leaf, see the disease, the confidence, and what to do about it.', screen: 'farmer', icon: <Camera size={18} /> },
   { title: 'Model research', description: 'Compare ResNet50, EfficientNet-B0, and MobileNetV3 on accuracy.', screen: 'research', icon: <Microscope size={18} /> },
   { title: 'Admin dashboard', description: 'Review prediction history, trends, and every saved report.', screen: 'admin', icon: <BookOpen size={18} /> },
 ];
 
-function Home({ navigate }) {
+function Home({ navigate, loggedIn }) {
   const links = [
     { label: 'Home', href: '/', active: true, screen: 'home' },
-    { label: 'Farmer scan', href: '/farmer', screen: 'farmer' },
+    { label: 'Detect Disease', href: '/farmer', screen: 'farmer' },
     { label: 'Research', href: '/research', screen: 'research' },
-    { label: 'Admin', href: '/admin', screen: 'admin' },
+    ...(loggedIn
+      ? [{ label: 'Dashboard', href: '/dashboard', screen: 'dashboard' }]
+      : [
+          { label: 'Sign in', href: '/login', screen: 'login' },
+          { label: 'Create account', href: '/register', screen: 'register' },
+        ]),
   ];
 
   return (
@@ -44,11 +50,11 @@ function Home({ navigate }) {
               <h1 className="max-w-[12ch] font-serif text-[42px] font-medium leading-[1.08] text-parchment sm:text-[52px] lg:text-[60px]">Know what&apos;s wrong with your grove before it <span className="text-[#86D84A]">spreads.</span></h1>
               <p className="mt-6 max-w-[49ch] text-base leading-relaxed text-[#BFD5C3] sm:text-lg">Photograph a citrus or guava leaf and get a verified diagnosis, explained in plain language, in under a minute.</p>
               <div className="mt-7 flex flex-wrap gap-3">
-                <button type="button" onClick={() => navigate('farmer')} className="inline-flex items-center gap-3 rounded-lg bg-turmeric px-5 py-3 text-sm font-semibold text-forestDeep shadow-[0_8px_20px_rgba(217,154,43,0.2)] transition hover:bg-[#E6AB3B]"><Camera size={18} /> Start a scan <ArrowRight size={16} /></button>
+                <button type="button" onClick={() => navigate(loggedIn ? 'farmer' : 'login')} className="inline-flex items-center gap-3 rounded-lg bg-turmeric px-5 py-3 text-sm font-semibold text-forestDeep shadow-[0_8px_20px_rgba(217,154,43,0.2)] transition hover:bg-[#E6AB3B]">{loggedIn ? <><Camera size={18} /> Start a scan</> : <>Sign in to your workspace</>} <ArrowRight size={16} /></button>
                 <button type="button" onClick={() => navigate('research')} className="inline-flex items-center gap-3 rounded-lg border border-[#63816D] px-5 py-3 text-sm text-parchment transition hover:border-[#A8C5AC] hover:bg-[#0C422D]"><BookOpen size={17} /> See model research</button>
               </div>
               <div className="mt-8 grid max-w-[590px] grid-cols-2 gap-4 border-t border-[#3A654C] pt-5 sm:grid-cols-4">
-                <Proof icon={<ShieldCheck />} value="84.09%" label="Test Accuracy" detail="ResNet50" />
+                <Proof icon={<ShieldCheck />} value="90.5%" label="Test Accuracy" detail="ResNet50" />
                 <Proof icon={<Check />} value="10" label="Disease Classes" />
                 <Proof icon={<Zap />} value="Under 1 Minute" label="Results" />
                 <Proof icon={<Camera />} value="Mobile" label="Friendly" />
@@ -62,7 +68,7 @@ function Home({ navigate }) {
         </section>
         <div className="border-b border-[#24513B] bg-[#06291D] px-7 py-4 sm:px-12 lg:px-14"><div className="mx-auto flex max-w-[1320px] flex-wrap items-center justify-between gap-4 text-sm text-[#BFD5C3]"><span className="inline-flex items-center gap-2"><Leaf size={18} className="text-[#86D84A]" /> Trusted by farmers and researchers</span><span className="text-[#86D84A]">ICAR</span><span>IARI</span><span>IHR</span><span>Krishi Vigyan Kendra</span><span className="inline-flex items-center gap-2"><span className="rounded-full bg-[#368D43] px-3 py-1 text-xs font-semibold text-white">+250</span> Farmers and growing</span></div></div>
       </div>
-      <main id="resources" className="mx-auto max-w-[1240px] px-3 py-12 text-parchment sm:px-7"><section><p className="mb-4 text-sm font-semibold text-[#F5F0E1]">How a scan works</p><div className="relative grid grid-cols-3 gap-6 min-[700px]:flex min-[700px]:justify-between min-[700px]:gap-2"><div className="pointer-events-none absolute left-4 right-4 top-[15px] hidden border-t border-dashed border-parchment/50 min-[700px]:block" />{workflow.map((step, index) => <div key={step} className="relative z-10 flex flex-col items-center gap-2 text-center min-[700px]:flex-1"><span className="grid h-[30px] w-[30px] place-items-center rounded-full bg-turmeric text-sm font-semibold text-forestDeep shadow-[0_2px_0_#B5791C]">{index + 1}</span><span className="text-xs font-medium text-parchment">{step}</span></div>)}</div></section><section id="about" className="mt-14"><p className="mb-4 text-sm text-parchment">Where to go</p><div className="grid grid-cols-1 gap-5 min-[700px]:grid-cols-3">{destinations.map((destination) => <article key={destination.title} className="rounded-xl bg-parchmentDark p-[22px] shadow-[5px_5px_0_#1F3D2B]"><div className="mb-7 grid h-10 w-10 place-items-center rounded-full bg-forest text-[#D4EA9A]">{destination.icon}</div><h2 className="font-serif text-[21px] font-medium text-soil">{destination.title}</h2><p className="mt-3 text-sm leading-relaxed text-soilMuted">{destination.description}</p><button type="button" onClick={() => navigate(destination.screen)} className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-turmericDeep hover:text-rust">Open <ArrowRight size={15} /></button></article>)}</div></section></main>
+      <main id="resources" className="mx-auto max-w-[1240px] px-3 py-12 text-parchment sm:px-7"><section><p className="mb-4 text-sm font-semibold text-[#F5F0E1]">How a scan works</p><div className="relative grid grid-cols-3 gap-6 min-[700px]:flex min-[700px]:justify-between min-[700px]:gap-2"><div className="pointer-events-none absolute left-4 right-4 top-[15px] hidden border-t border-dashed border-parchment/50 min-[700px]:block" />{workflow.map((step, index) => <div key={step} className="relative z-10 flex flex-col items-center gap-2 text-center min-[700px]:flex-1"><span className="grid h-[30px] w-[30px] place-items-center rounded-full bg-turmeric text-sm font-semibold text-forestDeep shadow-[0_2px_0_#B5791C]">{index + 1}</span><span className="text-xs font-medium text-parchment">{step}</span></div>)}</div></section><section id="about" className="mt-14"><p className="mb-4 text-sm text-parchment">Where to go</p><div className="grid grid-cols-1 gap-5 min-[700px]:grid-cols-3">{destinations.map((destination) => <article key={destination.title} className="rounded-xl bg-parchmentDark p-[22px] shadow-[5px_5px_0_#1F3D2B]"><div className="mb-7 grid h-10 w-10 place-items-center rounded-full bg-forest text-[#D4EA9A]">{destination.icon}</div><h2 className="font-serif text-[21px] font-medium text-soil">{destination.title}</h2><p className="mt-3 text-sm leading-relaxed text-soilMuted">{destination.description}</p><button type="button" onClick={() => navigate(loggedIn || destination.screen === 'research' ? destination.screen : 'login')} className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-turmericDeep hover:text-rust">Open <ArrowRight size={15} /></button></article>)}</div></section></main>
     </div>
   );
 }

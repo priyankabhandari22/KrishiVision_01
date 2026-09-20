@@ -57,6 +57,7 @@ def _get_mongo_collection():
         _mongo_client.admin.command("ping")
         _mongo_collection = _mongo_client[MONGODB_DATABASE][MONGODB_COLLECTION]
         _mongo_collection.create_index([("timestamp", ASCENDING)])
+        _mongo_collection.create_index([("user_id", ASCENDING), ("timestamp", ASCENDING)])
         logger.info(
             "Connected to MongoDB database '%s', collection '%s'.",
             MONGODB_DATABASE,
@@ -95,10 +96,11 @@ def _save_json_history(records: List[Dict[str, Any]]) -> None:
         logger.error("Failed to write JSON history fallback: %s", exc)
 
 
-def _build_record(advisory_data: Dict[str, Any], filename: str) -> Dict[str, Any]:
+def _build_record(advisory_data: Dict[str, Any], filename: str, user_id: Optional[str] = None) -> Dict[str, Any]:
     prediction_meta = advisory_data.get("prediction") or advisory_data
     return {
         "id": f"pred_{uuid.uuid4().hex[:10]}",
+        "user_id": user_id,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "filename": filename,
         "crop": prediction_meta.get("crop", "unknown"),
@@ -126,9 +128,13 @@ def _normalize_record(record: Dict[str, Any]) -> Dict[str, Any]:
     return record
 
 
-def record_prediction(advisory_data: Dict[str, Any], filename: str) -> Dict[str, Any]:
-    """Record a prediction in MongoDB, falling back to the local JSON store."""
-    record = _build_record(advisory_data, filename)
+def record_prediction(advisory_data: Dict[str, Any], filename: str, user_id: Optional[str] = None) -> Dict[str, Any]:
+    """Record a prediction in MongoDB, falling back to the local JSON store.
+
+    The owning user's ID is supplied by the authenticated session, never by
+    the client, so records can be isolated per farmer.
+    """
+    record = _build_record(advisory_data, filename, user_id=user_id)
     collection = _get_mongo_collection()
     if collection is not None:
         collection.insert_one(record)
@@ -140,7 +146,15 @@ def record_prediction(advisory_data: Dict[str, Any], filename: str) -> Dict[str,
     return record
 
 
-def _matches(record: Dict[str, Any], crop: Optional[str], disease: Optional[str], status: Optional[str]) -> bool:
+def _matches(
+    record: Dict[str, Any],
+    crop: Optional[str],
+    disease: Optional[str],
+    status: Optional[str],
+    user_id: Optional[str] = None,
+) -> bool:
+    if user_id is not None and record.get("user_id") != user_id:
+        return False
     return not any(
         value and str(record.get(field, "")).lower() != value.lower()
         for field, value in (("crop", crop), ("disease", disease), ("status", status))
@@ -148,45 +162,75 @@ def _matches(record: Dict[str, Any], crop: Optional[str], disease: Optional[str]
 
 
 def get_all_history(
+    user_id: Optional[str] = None,
     crop: Optional[str] = None,
     disease: Optional[str] = None,
     status: Optional[str] = None,
     limit: int = 100,
 ) -> List[Dict[str, Any]]:
-    """Fetch newest history records with optional filters."""
+    """Fetch newest history records with optional filters.
+
+    When ``user_id`` is provided, only records owned by that user are
+    returned. Legacy records without a ``user_id`` owner are excluded so one
+    farmer never sees another farmer's (or the shared legacy) predictions.
+    """
     collection = _get_mongo_collection()
     if collection is not None:
-        query = {
+        query = {"user_id": user_id}
+        query.update({
             field: value
             for field, value in (("crop", crop), ("disease", disease), ("status", status))
             if value
-        }
+        })
         return [_normalize_record(record) for record in collection.find(query, {"_id": 0}).sort("timestamp", -1).limit(limit)]
 
     return [
         _normalize_record(record) for record in _load_json_history()
-        if _matches(record, crop, disease, status)
+        if _matches(record, crop, disease, status, user_id=user_id)
     ][:limit]
 
 
-def get_prediction_by_id(record_id: str) -> Optional[Dict[str, Any]]:
-    """Retrieve one history record by its application-level ID."""
+def get_prediction_by_id(record_id: str, user_id: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    """Retrieve one history record by its application-level ID.
+
+    When ``user_id`` is provided, the record is only returned when it belongs
+    to that user - so callers can never discover or open another user's record.
+    """
     collection = _get_mongo_collection()
     if collection is not None:
-        return collection.find_one({"id": record_id}, {"_id": 0})
+        query = {"id": record_id}
+        if user_id is not None:
+            query["user_id"] = user_id
+        return collection.find_one(query, {"_id": 0})
 
-    return next((_normalize_record(record) for record in _load_json_history() if record.get("id") == record_id), None)
+    if user_id is None:
+        return next((_normalize_record(record) for record in _load_json_history() if record.get("id") == record_id), None)
+    return next(
+        (_normalize_record(record) for record in _load_json_history()
+         if record.get("id") == record_id and record.get("user_id") == user_id),
+        None,
+    )
 
 
-def clear_history() -> int:
-    """Delete all prediction records and return the number removed."""
+def clear_history(user_id: Optional[str] = None) -> int:
+    """Delete prediction records and return the number removed.
+
+    When ``user_id`` is provided only that user's records are deleted, so a
+    farmer can never clear another user's (or the shared legacy) history.
+    """
     collection = _get_mongo_collection()
     if collection is not None:
-        return collection.delete_many({}).deleted_count
+        if user_id is None:
+            return collection.delete_many({}).deleted_count
+        return collection.delete_many({"user_id": user_id}).deleted_count
 
     records = _load_json_history()
-    _save_json_history([])
-    return len(records)
+    if user_id is None:
+        _save_json_history([])
+        return len(records)
+    remaining = [record for record in records if record.get("user_id") != user_id]
+    _save_json_history(remaining)
+    return len(records) - len(remaining)
 
 
 def _empty_analytics() -> Dict[str, Any]:
@@ -196,23 +240,31 @@ def _empty_analytics() -> Dict[str, Any]:
         "diseased_count": 0,
         "low_confidence_count": 0,
         "average_confidence": 0.0,
+        "last_scan_confidence": None,
+        "last_scan_at": None,
         "disease_distribution": [],
         "crop_distribution": {"citrus": 0, "guava": 0},
         "model_benchmarks": {
             "selected_model": "ResNet50",
-            "selected_accuracy": 84.09,
+            "selected_accuracy": 90.52,
+            "per_crop_accuracy": {"guava": 93.75, "citrus": 88.82},
             "comparison": [
-                {"name": "ResNet50", "accuracy": 84.09, "status": "Production Selected"},
-                {"name": "EfficientNet-B0", "accuracy": 77.53, "status": "Evaluated"},
-                {"name": "MobileNetV3", "accuracy": 62.12, "status": "Evaluated"},
+                {"name": "ResNet50", "accuracy": 90.52, "status": "Production Selected"},
+                {"name": "EfficientNet-B0", "accuracy": 82.76, "status": "Evaluated"},
+                {"name": "MobileNetV3", "accuracy": 80.61, "status": "Evaluated"},
             ],
         },
     }
 
 
-def get_analytics_summary() -> Dict[str, Any]:
-    """Calculate analytics from the same MongoDB/JSON history source."""
-    records = get_all_history(limit=500)
+def get_analytics_summary(user_id: Optional[str] = None) -> Dict[str, Any]:
+    """Calculate personal analytics from the authenticated user's records only.
+
+    When ``user_id`` is provided all counts and distributions are scoped to
+    that user. Legacy records without an owner never leak into a farmer's
+    analytics.
+    """
+    records = get_all_history(user_id=user_id, limit=500)
     if not records:
         return _empty_analytics()
 
@@ -238,6 +290,7 @@ def get_analytics_summary() -> Dict[str, Any]:
             "status": record.get("status", "diseased"),
         })["count"] += 1
 
+    most_recent = records[0]
     summary = _empty_analytics()
     summary.update({
         "total_predictions": total,
@@ -245,6 +298,8 @@ def get_analytics_summary() -> Dict[str, Any]:
         "diseased_count": diseased_count,
         "low_confidence_count": low_confidence_count,
         "average_confidence": round(average_confidence, 4),
+        "last_scan_confidence": round(float(most_recent.get("confidence", 0.0)), 4) if most_recent.get("confidence") is not None else None,
+        "last_scan_at": most_recent.get("timestamp"),
         "disease_distribution": sorted(counts.values(), key=lambda item: item["count"], reverse=True),
         "crop_distribution": crop_counts,
     })

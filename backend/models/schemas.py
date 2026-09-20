@@ -13,6 +13,7 @@ Defines schemas for:
 
 from __future__ import annotations
 
+import re
 from typing import List, Literal, Optional
 from pydantic import BaseModel, Field, field_validator
 
@@ -220,6 +221,7 @@ class AdvisoryResponse(BaseModel):
 # ---------------------------------------------------------------------------
 class HistoryItem(BaseModel):
     id: str = Field(..., description="Unique prediction record ID")
+    user_id: Optional[str] = Field(default=None, description="Owning user ID, or None for pre-ownership legacy records")
     timestamp: str = Field(..., description="ISO 8601 creation timestamp")
     filename: str = Field(..., description="Uploaded image filename")
     crop: str = Field(..., description="Detected crop ('citrus' or 'guava')")
@@ -251,7 +253,73 @@ class AnalyticsSummary(BaseModel):
     diseased_count: int = Field(..., description="Total diseased leaf detections")
     low_confidence_count: int = Field(..., description="Predictions below 70% threshold")
     average_confidence: float = Field(..., description="Average confidence score across all runs")
+    last_scan_confidence: Optional[float] = Field(default=None, description="Confidence of the user's most recent scan, or None")
+    last_scan_at: Optional[str] = Field(default=None, description="ISO 8601 timestamp of the user's most recent scan, or None")
     disease_distribution: List[DiseaseDistributionItem] = Field(..., description="Breakdown by disease category")
     crop_distribution: dict = Field(..., description="Breakdown by crop")
     model_benchmarks: dict = Field(..., description="Comparison metrics for ResNet50, EfficientNet, MobileNet")
+
+
+# ---------------------------------------------------------------------------
+# 6. Auth Schemas
+# ---------------------------------------------------------------------------
+_EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
+PASSWORD_MIN_LENGTH = 8
+
+
+class RegisterRequest(BaseModel):
+    name: str = Field(..., min_length=1, max_length=100, description="Farmer's full name.")
+    email: str = Field(..., description="Valid email address; used to sign in.")
+    password: str = Field(
+        ...,
+        min_length=PASSWORD_MIN_LENGTH,
+        max_length=128,
+        description="Password (at least 8 characters).",
+    )
+    confirm_password: str = Field(..., description="Must match password.")
+
+    @field_validator("name")
+    @classmethod
+    def validate_name(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("Name cannot be empty.")
+        return value.strip()
+
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, value: str) -> str:
+        value = value.strip().lower()
+        if not _EMAIL_RE.match(value):
+            raise ValueError("Enter a valid email address (e.g. farmer@example.com).")
+        return value
+
+    @field_validator("confirm_password")
+    @classmethod
+    def validate_confirm(cls, value: str, info) -> str:
+        password = info.data.get("password")
+        if password is not None and value != password:
+            raise ValueError("Password and confirm password do not match.")
+        return value
+
+
+class LoginRequest(BaseModel):
+    email: str = Field(..., description="Registered email address.")
+    password: str = Field(..., min_length=1, description="Account password.")
+
+    @field_validator("email")
+    @classmethod
+    def normalize_email(cls, value: str) -> str:
+        return value.strip().lower()
+
+
+class AuthUserResponse(BaseModel):
+    id: str = Field(..., description="Stable user identifier.")
+    name: str = Field(..., description="User display name.")
+    email: str = Field(..., description="User email address.")
+
+
+class AuthResponse(BaseModel):
+    user: AuthUserResponse = Field(..., description="Authenticated user.")
+    message: str = Field(default="ok", description="Human-readable status message.")
 

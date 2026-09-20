@@ -4,4 +4,7 @@
 __pycache__/
 *.py[cod]
 frontend/node_modules/
-frontend/dist/
+frontend/dist/# Generated heatmap / Grad-CAM artifacts (regenerated at runtime)
+backend/static/heatmaps/
+disease-detection/heatmaps/
+disease-detection/static/heatmaps/

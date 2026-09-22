@@ -16,8 +16,8 @@ const NAV_ITEMS = [
   { label: 'Dashboard', screen: 'dashboard', icon: <LayoutDashboard size={18} /> },
   { label: 'Detect Disease', screen: 'farmer', icon: <Camera size={18} /> },
   { label: 'History', screen: 'admin', icon: <BookOpen size={18} /> },
-  { label: 'Crop Guide', screen: 'crop-guide', icon: <Activity size={18} /> },
   { label: 'Analytics', screen: 'analytics', icon: <BarChart3 size={18} /> },
+  { label: 'Crop Guide', screen: 'crop-guide', icon: <Activity size={18} /> },
   { label: 'Research', screen: 'research', icon: <Microscope size={18} /> },
 ];
 

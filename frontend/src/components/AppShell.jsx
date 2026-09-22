@@ -42,8 +42,8 @@ function AppShell({ screen, navigate, children }) {
       <div className="flex min-h-screen">
         <Sidebar screen={screen} navigate={navigate} menuOpen={menuOpen} onMenuChange={setMenuOpen} />
         <div className="flex min-w-0 flex-1 flex-col">
-          <div className="mx-auto w-full max-w-[1280px] grow overflow-x-clip px-4 py-6 sm:px-6 lg:px-8 lg:py-9">{children}</div>
-          <footer className="mx-auto flex w-full max-w-[1280px] flex-wrap items-center justify-center gap-x-6 gap-y-1 px-4 pb-8 sm:px-6 lg:px-8 text-xs text-soilMuted">
+          <div className="w-full grow overflow-x-clip px-4 py-6 sm:px-6 lg:px-8 lg:py-9">{children}</div>
+          <footer className="flex w-full flex-wrap items-center justify-center gap-x-6 gap-y-1 px-4 pb-8 sm:px-6 lg:px-8 text-xs text-soilMuted">
             <span className="font-semibold text-soil">KrishiVision</span>
             <span>Inference-first crop intelligence</span>
             <span>ResNet50 · Grad-CAM · Verified guidance</span>

@@ -6,6 +6,7 @@ import {
   Camera,
   LayoutDashboard,
   LogOut,
+  Microscope,
   X,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -17,6 +18,7 @@ const NAV_ITEMS = [
   { label: 'History', screen: 'admin', icon: <BookOpen size={18} /> },
   { label: 'Crop Guide', screen: 'crop-guide', icon: <Activity size={18} /> },
   { label: 'Analytics', screen: 'analytics', icon: <BarChart3 size={18} /> },
+  { label: 'Research', screen: 'research', icon: <Microscope size={18} /> },
 ];
 
 function Sidebar({ screen, navigate, menuOpen, onMenuChange }) {

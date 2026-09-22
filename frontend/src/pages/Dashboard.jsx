@@ -15,13 +15,29 @@ import StatCard from '../components/StatCard';
 import DetectionActionCard from '../components/DetectionActionCard';
 import CropTip from '../components/CropTip';
 import RecentDetection from '../components/RecentDetection';
+import ActivityLineChart from '../components/charts/ActivityLineChart';
+import CropBarChart from '../components/charts/CropBarChart';
+import HealthDonutChart from '../components/charts/HealthDonutChart';
 import { useAuth } from '../context/AuthContext';
 import { API, apiFetch } from '../api';
+
+function computeDailyActivity(history = []) {
+  if (!history.length) return [];
+  const countsByDate = {};
+  const sorted = [...history].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+  sorted.forEach((item) => {
+    if (!item.timestamp) return;
+    const dateStr = new Date(item.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    countsByDate[dateStr] = (countsByDate[dateStr] || 0) + 1;
+  });
+  return Object.entries(countsByDate).map(([date, count]) => ({ date, count }));
+}
 
 function Dashboard({ navigate, setReport }) {
   const { user } = useAuth();
   const [analytics, setAnalytics] = useState(null);
   const [history, setHistory] = useState([]);
+  const [fullHistory, setFullHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [apiError, setApiError] = useState(false);
 
@@ -33,19 +49,21 @@ function Dashboard({ navigate, setReport }) {
       try {
         const [aRes, hRes] = await Promise.all([
           apiFetch('/analytics'),
-          apiFetch('/history?limit=5'),
+          apiFetch('/history?limit=100'),
         ]);
         if (!cancelled) {
           const a = aRes.response.ok ? aRes.data : null;
           const h = hRes.response.ok ? hRes.data : null;
           setAnalytics(a);
-          setHistory(h?.history || []);
+          setFullHistory(h?.history || []);
+          setHistory((h?.history || []).slice(0, 5));
           failed = !aRes.response.ok && !hRes.response.ok;
         }
       } catch {
         if (!cancelled) {
           setAnalytics(null);
           setHistory([]);
+          setFullHistory([]);
           failed = true;
         }
       } finally {
@@ -63,11 +81,17 @@ function Dashboard({ navigate, setReport }) {
 
   const displayName = user?.name?.trim() || 'Farmer';
   const firstName = displayName.split(' ')[0];
-  const initial = displayName.charAt(0).toUpperCase();
 
   const total = analytics?.total_predictions ?? 0;
   const healthy = analytics?.healthy_count ?? 0;
   const diseased = analytics?.diseased_count ?? 0;
+
+  const activityData = computeDailyActivity(fullHistory);
+
+  const cropItems = [
+    { label: 'Citrus', count: analytics?.crop_distribution?.citrus || 0, color: '#e77b35' },
+    { label: 'Guava', count: analytics?.crop_distribution?.guava || 0, color: '#257542' },
+  ];
 
   const openDetection = (item) => {
     const saved = item.full_advisory || item;
@@ -96,15 +120,6 @@ function Dashboard({ navigate, setReport }) {
           <p className="mt-1.5 max-w-[58ch] text-sm text-soilMuted">
             Check your grove&apos;s health, run a new scan, and review past detections from one place.
           </p>
-        </div>
-        <div className="flex w-full max-w-full shrink-0 items-center gap-3 rounded-2xl border border-[#dce3d7] bg-white px-4 py-3 shadow-[0_6px_18px_rgba(31,61,43,0.05)] sm:w-auto">
-          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-forest text-[#D4EA9A]">
-            {initial}
-          </span>
-          <span className="min-w-0">
-            <span className="block max-w-[220px] truncate text-sm font-semibold leading-tight text-soil">{displayName}</span>
-            <span className="block max-w-[220px] truncate text-xs text-soilMuted">{user?.email || 'Farmer account'}</span>
-          </span>
         </div>
       </section>
 
@@ -138,6 +153,7 @@ function Dashboard({ navigate, setReport }) {
             </span>
           )}
         </div>
+
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <StatCard
             label="Total Scans"
@@ -160,6 +176,7 @@ function Dashboard({ navigate, setReport }) {
             hint={diseased === 0 ? 'No diseases found yet' : 'Your diseased leaves'}
           />
         </div>
+
         {analytics?.last_scan_confidence != null && (
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#dce3d7] bg-white px-4 py-3 shadow-[0_2px_10px_rgba(31,61,43,0.05)]">
             <div className="flex min-w-0 items-center gap-2.5">
@@ -187,6 +204,49 @@ function Dashboard({ navigate, setReport }) {
         )}
       </section>
 
+      {/* Dashboard Visualizations Overview (Compact 2-3 Charts) */}
+      <section className="mt-8 sm:mt-10">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="font-serif text-[20px] font-semibold text-soil">Analytics Overview</h2>
+          <button
+            type="button"
+            onClick={() => navigate('analytics')}
+            className="inline-flex items-center gap-1 text-sm font-semibold text-turmericDeep hover:text-rust"
+          >
+            Detailed Analytics <ChevronRight size={15} />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <ActivityLineChart
+              data={activityData}
+              mode="count"
+              title="Prediction Activity"
+              subtitle="Date vs Number of analyzed leaf scans"
+              height={220}
+            />
+          </div>
+          <div>
+            <HealthDonutChart
+              healthyCount={healthy}
+              diseasedCount={diseased}
+              title="Health Mix"
+              subtitle="Ratio of healthy vs diseased"
+            />
+          </div>
+        </div>
+
+        <div className="mt-6">
+          <CropBarChart
+            items={cropItems}
+            title="Crop Analysis"
+            subtitle="Scan count comparison for Citrus vs Guava"
+            height={180}
+          />
+        </div>
+      </section>
+
       <section className="mt-8 grid grid-cols-1 items-start gap-6 sm:mt-10 lg:grid-cols-3">
         <div className="min-w-0 lg:col-span-2">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
@@ -206,7 +266,7 @@ function Dashboard({ navigate, setReport }) {
             </div>
           ) : history.length > 0 ? (
             <div className="grid gap-3">
-              {history.slice(0, 5).map((item) => (
+              {history.map((item) => (
                 <RecentDetection key={item.id} detection={item} apiBase={API} onOpen={openDetection} />
               ))}
             </div>

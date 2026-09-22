@@ -22,7 +22,7 @@ const DISEASE_KEYS = {
 
 function CropGuidePage({ navigate }) {
   const [crop, setCrop] = useState('guava');
-  const active = CROPS.find((item) => item.slug === cropAbstract_safe) || CROPS[0];
+  const active = CROPS.find((item) => item.slug === crop) || CROPS[0];
   const diseases = DISEASE_KEYS[crop];
 
   return (
@@ -64,7 +64,7 @@ function CropGuidePage({ navigate }) {
           {diseases.map((disease) => {
             const content = getDiseaseContent(crop, disease);
             return (
-              <span className="crop-guide-chip" key={disease}>
+              <span className="crop-guide-chip" key={`${crop}-${disease}`}>
                 {content.displayTitle}
               </span>
             );
@@ -74,7 +74,7 @@ function CropGuidePage({ navigate }) {
 
       <section className="crop-guide-disease-grid">
         {diseases.map((disease) => (
-          <DiseaseRefCard crop={crop} disease={disease} key={disease} />
+          <DiseaseRefCard crop={crop} disease={disease} key={`${crop}-${disease}`} />
         ))}
       </section>
     </main>

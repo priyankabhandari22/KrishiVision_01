@@ -1,4 +1,8 @@
-export const API = (window.KRISHIVISION_API_URL || window.location.origin).replace(/\/$/, '');
+export const API = (
+  import.meta.env.VITE_API_URL ||
+  window.KRISHIVISION_API_URL ||
+  window.location.origin
+).replace(/\/$/, '');
 
 export const AUTH_ENDPOINT = `${API}/auth`;
 

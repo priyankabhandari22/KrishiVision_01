@@ -14,7 +14,8 @@ const LINE = [220, 227, 215];
 const SOFT = [242, 246, 238];
 
 function wrap(doc, value, maxWidth) {
-  const lines = doc.splitTextToSize(value, maxWidth);
+  const text = String(value || "");
+  const lines = doc.splitTextToSize(text, maxWidth);
   return lines.length ? lines : [""];
 }
 
@@ -42,7 +43,9 @@ function sectionTitle(doc, cursor, num, title) {
 
 function bullets(doc, cursor, items, { marker = "•", size = 9.5, lineHeight = 5.4 } = {}) {
   let y = cursor.y;
-  items.forEach((item) => {
+  const list = Array.isArray(items) ? items : [];
+  list.forEach((item) => {
+    if (!item) return;
     const layout = ensure(doc, 10, { x: M, y });
     y = layout.y;
     doc.setFont("helvetica", "bold");
@@ -52,10 +55,9 @@ function bullets(doc, cursor, items, { marker = "•", size = 9.5, lineHeight = 
     doc.setFont("helvetica", "normal");
     doc.setTextColor(...INK);
     const lines = wrap(doc, item, CW - 7);
-    doc.text({ text: lines[0], x: layout.x + 6, y: y + 1.4 });
-    if (lines.length > 1) {
-      doc.text(lines.slice(1).map((line, index) => ({ text: line, x: layout.x + 6, y: y + lineHeight * (index + 1) + 1.4 })));
-    }
+    lines.forEach((line, index) => {
+      doc.text(line, layout.x + 6, y + 1.4 + index * lineHeight);
+    });
     y += Math.max(lines.length, 1) * lineHeight + 1.6;
   });
   return { x: M, y };
@@ -67,10 +69,9 @@ function paragraph(doc, cursor, value, { size = 9.5, color = INK, lineHeight = 5
   doc.setFont("helvetica", style);
   doc.setFontSize(size);
   doc.setTextColor(...color);
-  doc.text({ text: lines[0], x: layout.x + 4, y: layout.y + 1.4 });
-  if (lines.length > 1) {
-    doc.text(lines.slice(1).map((line, index) => ({ text: line, x: layout.x + 4, y: layout.y + lineHeight * (index + 1) + 1.4 })));
-  }
+  lines.forEach((line, index) => {
+    doc.text(line, layout.x + 4, layout.y + 1.4 + index * lineHeight);
+  });
   return { x: M, y: layout.y + lines.length * lineHeight + 2 };
 }
 
@@ -85,15 +86,48 @@ function noteBox(doc, cursor, value) {
   doc.setFont("helvetica", "italic");
   doc.setFontSize(9);
   doc.setTextColor(...MUTED);
-  doc.text({ text: lines[0], x: final.x + 6, y: final.y + 9 });
-  if (lines.length > 1) {
-    doc.text(lines.slice(1).map((line, index) => ({ text: line, x: final.x + 6, y: final.y + 9 + 5.6 * (index + 1) })));
-  }
+  lines.forEach((line, index) => {
+    doc.text(line, final.x + 6, final.y + 9 + index * 5.6);
+  });
   return { x: M, y: final.y + height + 4 };
 }
 
 async function loadImage(src) {
-  const response = await fetch(src);
+  if (!src) throw new Error("no image src");
+  let targetSrc = src;
+  if (typeof src === 'string' && src.startsWith('/')) {
+    const apiBase = (window.KRISHIVISION_API_URL || window.location.origin).replace(/\/$/, '');
+    targetSrc = `${apiBase}${src}`;
+  }
+
+  if (typeof targetSrc === 'string' && (targetSrc.startsWith('data:') || targetSrc.startsWith('blob:'))) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        try {
+          const targetWidth = 960;
+          const ratio = Math.max(1, Math.round((img.naturalWidth || 400) / targetWidth));
+          const width = Math.round((img.naturalWidth || 400) / ratio);
+          const height = Math.round((img.naturalHeight || 300) / ratio);
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, width, height);
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve({ dataUrl: canvas.toDataURL("image/jpeg", 0.85), width, height });
+        } catch (err) {
+          reject(err);
+        }
+      };
+      img.onerror = () => reject(new Error("unable to decode image"));
+      img.src = targetSrc;
+    });
+  }
+
+  const response = await fetch(targetSrc);
   if (!response.ok) throw new Error("unable to load image");
   const blob = await response.blob();
   const objectUrl = URL.createObjectURL(blob);
@@ -105,9 +139,9 @@ async function loadImage(src) {
       img.src = objectUrl;
     });
     const targetWidth = 960;
-    const ratio = Math.max(1, Math.round(img.naturalWidth / targetWidth));
-    const width = Math.round(img.naturalWidth / ratio);
-    const height = Math.round(img.naturalHeight / ratio);
+    const ratio = Math.max(1, Math.round((img.naturalWidth || 400) / targetWidth));
+    const width = Math.round((img.naturalWidth || 400) / ratio);
+    const height = Math.round((img.naturalHeight || 300) / ratio);
     const canvas = document.createElement("canvas");
     canvas.width = width;
     canvas.height = height;
@@ -130,13 +164,15 @@ async function drawBrandHeader(doc, logoUrl) {
   if (logoUrl) {
     try {
       const converted = await loadImage(logoUrl);
-      const chip = 16;
-      const logoH = Math.min(chip - 4, (chip - 8) * (converted.height / converted.width));
-      const logoW = logoH * (converted.width / converted.height);
-      doc.setFillColor(255, 255, 255);
-      doc.roundedRect(M, 8, chip, chip, 4, 4, "F");
-      doc.addImage(converted.dataUrl, "JPEG", M + (chip - logoW) / 2, 8 + (chip - logoH) / 2, logoW, logoH, undefined, "FAST");
-      logoOffset = chip + 6;
+      if (converted && converted.dataUrl) {
+        const chip = 16;
+        const logoH = Math.min(chip - 4, (chip - 8) * (converted.height / converted.width || 1));
+        const logoW = logoH * (converted.width / converted.height || 1);
+        doc.setFillColor(255, 255, 255);
+        doc.roundedRect(M, 8, chip, chip, 4, 4, "F");
+        doc.addImage(converted.dataUrl, "JPEG", M + (chip - logoW) / 2, 8 + (chip - logoH) / 2, logoW, logoH, undefined, "FAST");
+        logoOffset = chip + 6;
+      }
     } catch (_) {
       /* logo embedding is optional */
     }
@@ -159,7 +195,7 @@ function metaBox(doc, cursor, report, content, percent, timestamp, reportId) {
   const rowHeight = 6.4;
   const rows = [
     ["Crop", titleCase(report.crop)],
-    ["Detected condition", content.displayTitle],
+    ["Detected condition", content?.displayTitle || "Detected Condition"],
     ["Confidence", percent == null ? "Not available" : `${percent}%`],
     ["Diagnosis", titleCase(report.status)],
     ["Date and time", timestamp],
@@ -175,20 +211,24 @@ function metaBox(doc, cursor, report, content, percent, timestamp, reportId) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(8.5);
     doc.setTextColor(...MUTED);
-    doc.text(label.toUpperCase(), layout.x + 8, y);
+    doc.text(String(label || "").toUpperCase(), layout.x + 8, y);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
     doc.setTextColor(...INK);
-    doc.text(String(value), layout.x + CW / 2, y);
+    doc.text(String(value || ""), layout.x + CW / 2, y);
   });
   return { x: M, y: layout.y + height + 6 };
 }
 
 function timeline(doc, cursor, content) {
   let y = cursor.y;
-  content.timeline.forEach((entry) => {
-    const estimate = wrap(doc, `${entry.period}  ·  ${entry.title}`, CW - 4);
-    const lines = wrap(doc, entry.description, CW - 10);
+  const items = Array.isArray(content?.timeline) ? content.timeline : [];
+  items.forEach((entry) => {
+    if (!entry) return;
+    const periodStr = String(entry.period || "");
+    const titleStr = String(entry.title || "");
+    const descStr = String(entry.description || "");
+    const lines = wrap(doc, descStr, CW - 10);
     const height = lines.length * 5 + 11;
     const layout = ensure(doc, height, { x: M, y });
     y = layout.y;
@@ -198,18 +238,19 @@ function timeline(doc, cursor, content) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(9.5);
     doc.setTextColor(...GOLD);
-    doc.text(entry.period, layout.x + 6, layout.y + 7);
+    doc.text(periodStr, layout.x + 6, layout.y + 7);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...BRAND);
-    const titleLines = wrap(doc, entry.title, CW - 42);
-    doc.text(titleLines.map((line, index) => ({ text: line, x: layout.x + 44, y: layout.y + 7 + index * 6 })));
+    const titleLines = wrap(doc, titleStr, CW - 42);
+    titleLines.forEach((line, index) => {
+      doc.text(line, layout.x + 44, layout.y + 7 + index * 6);
+    });
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
     doc.setTextColor(...INK);
-    doc.text({ text: lines[0], x: layout.x + 6, y: layout.y + 15 });
-    if (lines.length > 1) {
-      doc.text(lines.slice(1).map((line, index) => ({ text: line, x: layout.x + 6, y: layout.y + 15 + 5 * (index + 1) })));
-    }
+    lines.forEach((line, index) => {
+      doc.text(line, layout.x + 6, layout.y + 15 + index * 5);
+    });
     y += height + 3;
   });
   return { x: M, y };
@@ -217,10 +258,11 @@ function timeline(doc, cursor, content) {
 
 function resources(doc, cursor, content) {
   let y = cursor.y;
-  content.resources.forEach((key) => {
+  const resKeys = Array.isArray(content?.resources) ? content.resources : [];
+  resKeys.forEach((key) => {
     const resource = RESOURCES[key];
     if (!resource) return;
-    const lines = wrap(doc, resource.note, CW - 6);
+    const lines = wrap(doc, resource.note || "", CW - 6);
     const height = lines.length * 5 + 12;
     const layout = ensure(doc, height, { x: M, y });
     y = layout.y;
@@ -230,20 +272,21 @@ function resources(doc, cursor, content) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(9.5);
     doc.setTextColor(...BRAND);
-    doc.text(resource.title, layout.x + 6, layout.y + 6.5);
+    doc.text(String(resource.title || ""), layout.x + 6, layout.y + 6.5);
     doc.setTextColor(...MUTED);
     doc.setFontSize(8);
-    doc.text({ text: lines[0], x: layout.x + 6, y: layout.y + 12 });
-    if (lines.length > 1) {
-      doc.text(lines.slice(1).map((line, index) => ({ text: line, x: layout.x + 6, y: layout.y + 12 + 4.8 * (index + 1) })));
-    }
+    lines.forEach((line, index) => {
+      doc.text(line, layout.x + 6, layout.y + 12 + index * 4.8);
+    });
     doc.setFont("helvetica", "bold");
     doc.setFontSize(8.5);
     doc.setTextColor(...GOLD);
     const urlY = y + height - 3.5;
-    const url = resource.url;
-    doc.textWithLink(url, layout.x + 6, urlY, { url });
-    doc.link(layout.x + 6, urlY - 1, doc.getTextWidth(url), 2, { url });
+    const url = String(resource.url || "");
+    if (url) {
+      doc.textWithLink(url, layout.x + 6, urlY, { url });
+      doc.link(layout.x + 6, urlY - 1, doc.getTextWidth(url), 2, { url });
+    }
     y += height + 3;
   });
   return { x: M, y };
@@ -251,7 +294,7 @@ function resources(doc, cursor, content) {
 
 function safety(doc, cursor, report, content) {
   const lines = [];
-  lines.push(`This report describes only the uploaded leaf. The uploaded leaf is classified as ${content.displayTitle}.`);
+  lines.push(`This report describes only the uploaded leaf. The uploaded leaf is classified as ${content?.displayTitle || "Detected Condition"}.`);
   lines.push("Accuracy, precision, recall, F1 score, and confusion matrices are evaluation metrics for labeled test datasets, not individual image predictions.");
   if (report.disclaimer) lines.push(report.disclaimer);
   let y = cursor.y;
@@ -262,10 +305,9 @@ function safety(doc, cursor, report, content) {
     doc.setFontSize(8.5);
     doc.setTextColor(...MUTED);
     const wrapped = wrap(doc, value, CW - 8);
-    doc.text({ text: wrapped[0], x: layout.x + 4, y: layout.y + 1 });
-    if (wrapped.length > 1) {
-      doc.text(wrapped.slice(1).map((line, index) => ({ text: line, x: layout.x + 4, y: layout.y + 1 + 4.8 * (index + 1) })));
-    }
+    wrapped.forEach((line, index) => {
+      doc.text(line, layout.x + 4, layout.y + 1 + index * 4.8);
+    });
     y += wrapped.length * 4.8 + 1.2;
   });
   return { x: M, y };
@@ -299,23 +341,27 @@ export async function generatePdf(report, content, options = {}) {
   await drawBrandHeader(doc, options.logoUrl);
   cursor = metaBox(doc, cursor, report, content, percent, timestamp, reportId);
 
-  const previewUrl = options.preview;
-  const heatmapUrl = options.heatmapPath;
+  const previewUrl = options.preview || report?.preview;
+  const heatmapUrl = options.heatmapPath || report?.heatmap_path;
   const images = [];
   if (previewUrl) {
     try {
       const converted = await loadImage(previewUrl);
-      images.push({ dataUrl: converted.dataUrl, label: "Uploaded leaf", ratio: converted.height / converted.width });
-    } catch (_) {
-      /* image embedding is optional */
+      if (converted && converted.dataUrl) {
+        images.push({ dataUrl: converted.dataUrl, label: "Uploaded leaf", ratio: converted.height / converted.width || 0.75 });
+      }
+    } catch (err) {
+      console.warn("Preview image loading skipped for PDF:", err);
     }
   }
   if (heatmapUrl) {
     try {
       const converted = await loadImage(heatmapUrl);
-      images.push({ dataUrl: converted.dataUrl, label: "Grad-CAM heatmap", ratio: converted.height / converted.width });
-    } catch (_) {
-      /* image embedding is optional */
+      if (converted && converted.dataUrl) {
+        images.push({ dataUrl: converted.dataUrl, label: "Grad-CAM heatmap", ratio: converted.height / converted.width || 0.75 });
+      }
+    } catch (err) {
+      console.warn("Heatmap image loading skipped for PDF:", err);
     }
   }
 
@@ -342,9 +388,9 @@ export async function generatePdf(report, content, options = {}) {
   }
 
   cursor = sectionTitle(doc, cursor, 1, "Problem explanation");
-  cursor = paragraph(doc, cursor, report.explanation || content.displayTitle);
+  cursor = paragraph(doc, cursor, report.explanation || content?.displayTitle || "Detected condition");
   cursor = { x: M, y: cursor.y + 1 };
-  cursor = bullets(doc, cursor, content.keyPoints);
+  cursor = bullets(doc, cursor, content?.keyPoints);
 
   cursor = sectionTitle(doc, cursor, 2, "Immediate action");
   cursor = bullets(doc, cursor, Array.isArray(report.immediate_actions) ? report.immediate_actions : [], { marker: "✓" });
@@ -374,10 +420,10 @@ export async function generatePdf(report, content, options = {}) {
     cursor = paragraph(doc, cursor, ltp.inspection_guidance);
     cursor = { x: M, y: cursor.y + 1 };
   }
-  cursor = bullets(doc, cursor, content.monitoring);
+  cursor = bullets(doc, cursor, content?.monitoring);
 
   cursor = sectionTitle(doc, cursor, 7, "When to contact an expert");
-  cursor = bullets(doc, cursor, content.expertHelp);
+  cursor = bullets(doc, cursor, content?.expertHelp);
 
   cursor = sectionTitle(doc, cursor, 8, "Helpful resources");
   cursor = resources(doc, cursor, content);

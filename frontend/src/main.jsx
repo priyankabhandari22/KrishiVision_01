@@ -63,17 +63,37 @@ function App() {
   if (checking) return <Splash />;
 
   const loggedIn = Boolean(user);
-  const inShell = loggedIn && PROTECTED_SCREENS.includes(screen);
+  const inShell = loggedIn && (PROTECTED_SCREENS.includes(screen) || screen === 'research');
 
   return (
     <div className="app-shell">
       {screen === 'home' && <Home navigate={navigate} loggedIn={loggedIn} />}
-          {screen === 'research' && (
-            <div className="page-width research-page-wrap">
-              <ResearchPage navigate={navigate} />
-              <footer><span>KrishiVision</span><span>Inference-first crop intelligence</span><span>ResNet50 · Grad-CAM · Verified guidance</span></footer>
+      {!loggedIn && screen === 'research' && (
+        <div className="w-full min-h-screen bg-[#F4F1E6] font-sans text-soil">
+          <header className="sticky top-0 z-40 flex items-center justify-between border-b border-[#3A654C] bg-forest px-6 py-3.5 text-parchment">
+            <div className="flex items-center gap-3">
+              <img src={logo} alt="" className="h-9 w-auto object-contain" />
+              <span className="font-serif text-lg font-semibold text-parchment">KrishiVision</span>
             </div>
-          )}
+            <button
+              type="button"
+              onClick={() => navigate('home')}
+              className="rounded-lg border border-parchment/30 px-3.5 py-1.5 text-xs font-semibold text-parchment hover:bg-forestDeep"
+            >
+              ← Back to Home
+            </button>
+          </header>
+          <div className="w-full px-4 py-6 sm:px-6 lg:px-8 lg:py-9">
+            <ResearchPage navigate={navigate} />
+          </div>
+          <footer className="flex w-full flex-wrap items-center justify-center gap-x-6 gap-y-1 px-4 pb-8 text-xs text-soilMuted">
+            <span className="font-semibold text-soil">KrishiVision</span>
+            <span>Inference-first crop intelligence</span>
+            <span>ResNet50 · Grad-CAM · Verified guidance</span>
+            <span>© {new Date().getFullYear()} KrishiVision</span>
+          </footer>
+        </div>
+      )}
       {!loggedIn && screen === 'login' && <Login navigate={navigate} />}
       {!loggedIn && screen === 'register' && <Register navigate={navigate} />}
       {screen === 'camera' && (
@@ -101,6 +121,7 @@ function App() {
           {screen === 'admin' && <HistoryPage history={history} setHistory={setHistory} setReport={setReport} navigate={navigate} />}
           {screen === 'analytics' && <AnalyticsPage navigate={navigate} />}
           {screen === 'crop-guide' && <CropGuidePage navigate={navigate} />}
+          {screen === 'research' && <ResearchPage navigate={navigate} />}
           {screen === 'profile' && <ComingSoonPage title="Profile" navigate={navigate} />}
         </AppShell>
       )}
@@ -134,7 +155,7 @@ function ResearchPage({ navigate }) {
   const improvement = (models[0].score - models[2].score).toFixed(2);
   const selectedEvaluation = selectedModel.name === 'ResNet50' ? evaluation : evaluation?.evaluation_reports?.[selectedModel.name];
   const metrics = selectedModel.name === 'ResNet50' ? (evaluation?.combined_metrics || {}) : (selectedEvaluation || {});
-  return <main className="page-width inner-page research-dashboard">
+  return <main className="w-full min-w-0 research-dashboard">
     <PageIntro back={() => (navigate ? navigate('home') : window.history.back())} icon={<Microscope />} title="Research / model comparison" copy="A focused view of the recorded benchmark evidence behind KrishiVision's production model selection." />
     <section className="research-dashboard-intro"><div><span className="section-label">RESEARCH OVERVIEW</span><h2>Which model gives the clearest signal?</h2><p>KrishiVision compares three evaluated architectures for Citrus and Guava leaf classification. ResNet50 is currently selected for production based on the highest recorded test accuracy.</p></div><div className="research-status"><span className="status-dot"><span /> Evaluation snapshot</span><strong>3 models · 1 selected</strong><small>Metrics shown exactly as stored in the project</small></div></section>
     <section className="research-dashboard-section"><div className="dashboard-section-heading"><div><span className="section-label">MODEL COMPARISON OVERVIEW</span><h2>Evaluated candidates</h2></div><span className="dashboard-hint">Select a model to inspect it</span></div><div className="model-card-grid">{models.map((model, index) => <button className={`model-card ${index === 0 ? 'production' : ''} ${selectedModel.name === model.name ? 'active' : ''}`} key={model.name} onClick={() => setSelectedModel(model)}><div className="model-card-top"><span className={`model-dot ${model.color}`} /><span>{index === 0 ? 'PRODUCTION SELECTED' : 'BENCHMARK'}</span></div><strong>{model.name}</strong><div className="model-card-score">{model.score}%</div><small>test accuracy</small><span className="model-card-footer">{selectedModel.name === model.name ? 'Inspecting details' : 'View details'} <ArrowRight size={14} /></span></button>)}</div></section>
@@ -144,8 +165,38 @@ function ResearchPage({ navigate }) {
   </main>;
 }
 
-function AccuracyChart() { const chartHeight = 190; const chartTop = 15; const chartBottom = 160; return <div className="accuracy-chart"><div className="chart-y-axis"><span>100</span><span>75</span><span>50</span><span>25</span><span>0</span></div><div className="chart-plot"><div className="chart-grid-lines"><i /><i /><i /><i /><i /></div><div className="chart-bars">{models.map((model) => <div className="chart-bar-column" key={model.name}><div className={`chart-bar ${model.color}`} style={{ height: `${(model.score / 100) * (chartBottom - chartTop)}px` }}><strong>{model.score}%</strong></div><span>{model.name}</span></div>)}</div></div></div>; }
-function ConfusionMatrix({ evaluation }) { const matrix = evaluation?.confusion_matrix; if (!matrix?.matrix?.length) return <div className="confusion-empty"><strong>Evaluation data unavailable</strong></div>; const max = Math.max(...matrix.matrix.flat()); return <div className="confusion-table-wrap"><table className="confusion-table"><thead><tr><th>True / Predicted</th>{matrix.labels.map((label) => <th key={label}>{label}</th>)}</tr></thead><tbody>{matrix.matrix.map((row, rowIndex) => <tr key={matrix.labels[rowIndex]}><th>{matrix.labels[rowIndex]}</th>{row.map((value, columnIndex) => <td key={`${rowIndex}-${columnIndex}`} style={{ opacity: value ? 0.45 + (value / max) * 0.55 : 0.18 }}>{value}</td>)}</tr>)}</tbody></table></div>; }
+function AccuracyChart() {
+  return (
+    <div className="accuracy-chart">
+      <div className="chart-y-axis">
+        <span>100</span>
+        <span>75</span>
+        <span>50</span>
+        <span>25</span>
+        <span>0</span>
+      </div>
+      <div className="chart-plot">
+        <div className="chart-grid-lines">
+          <i /><i /><i /><i /><i />
+        </div>
+        <div className="chart-bars-area">
+          {models.map((model) => (
+            <div className="chart-bar-column" key={model.name}>
+              <div
+                className={`chart-bar ${model.color}`}
+                style={{ height: `${model.score}%` }}
+              >
+                <strong>{model.score}%</strong>
+              </div>
+              <span className="chart-bar-label">{model.name}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+function ConfusionMatrix({ evaluation }) { const matrix = evaluation?.confusion_matrix; if (!matrix?.matrix?.length) return <div className="confusion-empty"><strong>Evaluation data unavailable</strong></div>; const max = Math.max(...matrix.matrix.flat()); return <div className="confusion-table-wrap"><table className="confusion-table"><thead><tr><th>True / Predicted</th>{matrix.labels.map((label, index) => <th key={`label-${index}`}>{label}</th>)}</tr></thead><tbody>{matrix.matrix.map((row, rowIndex) => <tr key={`row-${rowIndex}`}><th>{matrix.labels[rowIndex]}</th>{row.map((value, columnIndex) => <td key={`${rowIndex}-${columnIndex}`} style={{ opacity: value ? 0.45 + (value / max) * 0.55 : 0.18 }}>{value}</td>)}</tr>)}</tbody></table></div>; }
 function Metric({ label, value, state }) { return <article className={`metric-card ${value ? 'available' : ''}`}><small>{label}</small><strong>{value || '--'}</strong><span>{state}</span></article>; }
 
 createRoot(document.getElementById('root')).render(

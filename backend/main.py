@@ -60,8 +60,6 @@ async def serve_index():
     index_file = FRONTEND_DIR / "dist" / "index.html"
     if not index_file.exists():
         index_file = FRONTEND_DIR / "index.html"
-    if not index_file.exists():
-        index_file = FRONTEND_DIR / "pages" / "index.html"
     if index_file.exists():
         return FileResponse(index_file)
     return {"message": "KrishiVision API is running. Access API docs at /docs."}

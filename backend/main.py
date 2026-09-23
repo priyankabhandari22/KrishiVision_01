@@ -65,7 +65,14 @@ async def serve_index():
     return {"message": "KrishiVision API is running. Access API docs at /docs."}
 
 @app.get("/favicon.ico", include_in_schema=False)
+@app.get("/favicon.svg", include_in_schema=False)
 async def favicon():
+    fav_dist = FRONTEND_DIR / "dist" / "favicon.svg"
+    if fav_dist.exists():
+        return FileResponse(fav_dist)
+    fav_pub = FRONTEND_DIR / "public" / "favicon.svg"
+    if fav_pub.exists():
+        return FileResponse(fav_pub)
     return FileResponse(FRONTEND_DIR / "assets" / "leaf.svg")
 
 app.include_router(api_router)

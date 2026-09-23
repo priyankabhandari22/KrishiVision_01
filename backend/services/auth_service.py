@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 load_dotenv(_PROJECT_ROOT / ".env")
 
-JWT_SECRET = os.getenv("KRISHIVISION_JWT_SECRET", "").strip()
+JWT_SECRET = (os.getenv("KRISHIVISION_JWT_SECRET") or os.getenv("SECRET_KEY") or "krishivision_default_jwt_secret_key_2026").strip()
 JWT_ALGORITHM = "HS256"
 TOKEN_EXPIRE_HOURS = int(os.getenv("KRISHIVISION_TOKEN_EXPIRE_HOURS", "168"))
 COOKIE_NAME = os.getenv("KRISHIVISION_COOKIE_NAME", "krishivision_token")

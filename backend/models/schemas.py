@@ -322,4 +322,5 @@ class AuthUserResponse(BaseModel):
 class AuthResponse(BaseModel):
     user: AuthUserResponse = Field(..., description="Authenticated user.")
     message: str = Field(default="ok", description="Human-readable status message.")
+    token: Optional[str] = Field(default=None, description="Signed JWT token for cross-origin auth.")
 

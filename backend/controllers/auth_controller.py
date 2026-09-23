@@ -36,13 +36,13 @@ logger = logging.getLogger(__name__)
 
 
 def _cookie_kwargs() -> Dict[str, Any]:
-    from datetime import timedelta
-
+    import os
+    is_prod = COOKIE_SECURE or os.getenv("RENDER") is not None or os.getenv("PORT") is not None
     return {
         "key": COOKIE_NAME,
         "httponly": True,
-        "secure": COOKIE_SECURE,
-        "samesite": "lax",
+        "secure": is_prod,
+        "samesite": "none" if is_prod else "lax",
         "max_age": TOKEN_EXPIRE_HOURS * 3600,
         "path": "/",
     }
@@ -54,6 +54,7 @@ def _auth_response(user: Dict[str, Any]) -> JSONResponse:
         content=AuthResponse(
             user=AuthUserResponse(**to_public_user(user)),
             message="ok",
+            token=token,
         ).model_dump(),
     )
     response.set_cookie(value=token, **_cookie_kwargs())

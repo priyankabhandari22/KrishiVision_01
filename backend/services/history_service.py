@@ -29,50 +29,50 @@ logger = logging.getLogger(__name__)
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 load_dotenv(_PROJECT_ROOT / ".env")
 
-MONGODB_URI = os.getenv(
-    "KRISHIVISION_MONGODB_URI",
-    "mongodb://localhost:27017/KrishiVisonDb",
-)
-MONGODB_DATABASE = os.getenv("KRISHIVISION_MONGODB_DATABASE", "KrishiVisonDb")
-MONGODB_COLLECTION = os.getenv("KRISHIVISION_MONGODB_COLLECTION", "prediction_history")
-
-_DATA_DIR = Path(__file__).resolve().parents[1] / "data"
-_HISTORY_FILE = _DATA_DIR / "history_store.json"
-_mongo_client = None
-_mongo_collection = None
-_mongo_checked = False
+def _get_mongo_uri() -> str:
+    return (
+        os.getenv("KRISHIVISION_MONGODB_URI")
+        or os.getenv("MONGO_URI")
+        or os.getenv("MONGODB_URI")
+        or "mongodb://localhost:27017/KrishiVisonDb"
+    ).strip()
 
 
 def _get_mongo_collection():
-    """Connect once and return the history collection, or None if unavailable."""
-    global _mongo_client, _mongo_collection, _mongo_checked
-    if _mongo_checked:
+    """Connect and return the history collection, or None if unavailable."""
+    global _mongo_client, _mongo_collection
+    if _mongo_collection is not None:
         return _mongo_collection
 
-    _mongo_checked = True
+    uri = _get_mongo_uri()
+    db_name = os.getenv("KRISHIVISION_MONGODB_DATABASE", os.getenv("MONGO_DATABASE", "KrishiVisonDb"))
+    coll_name = os.getenv("KRISHIVISION_MONGODB_COLLECTION", "prediction_history")
+
     try:
         from pymongo import ASCENDING, MongoClient
 
-        _mongo_client = MongoClient(MONGODB_URI, serverSelectionTimeoutMS=1500)
-        _mongo_client.admin.command("ping")
-        _mongo_collection = _mongo_client[MONGODB_DATABASE][MONGODB_COLLECTION]
-        _mongo_collection.create_index([("timestamp", ASCENDING)])
-        _mongo_collection.create_index([("user_id", ASCENDING), ("timestamp", ASCENDING)])
+        client = MongoClient(uri, serverSelectionTimeoutMS=2500)
+        client.admin.command("ping")
+        collection = client[db_name][coll_name]
+        collection.create_index([("timestamp", ASCENDING)])
+        collection.create_index([("user_id", ASCENDING), ("timestamp", ASCENDING)])
+        _mongo_client = client
+        _mongo_collection = collection
         logger.info(
             "Connected to MongoDB database '%s', collection '%s'.",
-            MONGODB_DATABASE,
-            MONGODB_COLLECTION,
+            db_name,
+            coll_name,
         )
+        return _mongo_collection
     except Exception as exc:
         _mongo_client = None
         _mongo_collection = None
         logger.warning(
             "MongoDB is unavailable at %s; using JSON fallback: %s",
-            MONGODB_URI,
+            uri,
             exc,
         )
-
-    return _mongo_collection
+        return None
 
 
 def _load_json_history() -> List[Dict[str, Any]]:
